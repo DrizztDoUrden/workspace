@@ -1,0 +1,4 @@
+package SSGlobals
+	public unit array udg_Curent_Player_Hero
+	public unit array udg_Circles
+endpackage

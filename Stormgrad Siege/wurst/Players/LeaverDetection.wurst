@@ -1,0 +1,109 @@
+package LeaverDetection
+	import SSGlobals
+	trigger gg_trg_Leaver2
+	trigger gg_trg_Leaver3
+	trigger gg_trg_Leaver4
+	trigger gg_trg_Leaver5
+	trigger gg_trg_Leaver6
+	trigger gg_trg_Leaver7
+	trigger gg_trg_Leaver8
+	trigger gg_trg_Leaver9
+	trigger gg_trg_Leaver10
+	trigger gg_trg_Leaver11
+	
+	function trig_Leaver_Viewer(integer p)
+		integer i = 2
+		while (i < 12)
+			DisplayTextToPlayer(Player(i), 0, 0, GetPlayerName(Player(p)) + " вышел из игры")
+			i = i + 1
+	
+	function trig_Leaver_Main(integer p)
+		integer i = 0
+		unit u = udg_Curent_Player_Hero[p+1]
+		unit c = udg_Circles[p+1]
+		
+		SetUnitPositionLoc( u, GetUnitLoc(c) )
+		while (i < 6)
+			CreateItem( GetItemTypeId(UnitItemInSlot(u, i)), GetUnitX(c), GetUnitY(c) )
+			RemoveItem( UnitRemoveItemFromSlot( u, i ) )
+			CreateItem( GetItemTypeId(UnitItemInSlot(c, i)), GetUnitX(c), GetUnitY(c) )
+			RemoveItem( UnitRemoveItemFromSlot( c, i ) )
+			i = i + 1
+	    
+		i = 2
+		while (i < 12)
+			DisplayTextToPlayer(Player(i), 0, 0, GetPlayerName(Player(p)) + " вышел из игры")
+			i = i + 1
+	
+	function trig_Leaver2_Actions()
+		trig_Leaver_Viewer(2)
+	
+	function trig_Leaver3_Actions()
+		trig_Leaver_Main(3)
+	
+	function trig_Leaver4_Actions()
+		trig_Leaver_Main(4)
+	
+	function trig_Leaver5_Actions()
+		trig_Leaver_Main(5)
+	
+	function trig_Leaver6_Actions()
+		trig_Leaver_Main(6)
+	
+	function trig_Leaver7_Actions()
+		trig_Leaver_Main(7)
+	
+	function trig_Leaver8_Actions()
+		trig_Leaver_Main(8)
+	
+	function trig_Leaver9_Actions()
+		trig_Leaver_Main(9)
+	
+	function trig_Leaver10_Actions()
+		trig_Leaver_Main(10)
+	
+	function trig_Leaver11_Actions()
+		trig_Leaver_Viewer(11)
+	
+	//===========================================================================
+	init
+		gg_trg_Leaver2 = CreateTrigger(  )
+		TriggerRegisterPlayerEvent(gg_trg_Leaver2, Player(2), EVENT_PLAYER_LEAVE)
+		TriggerAddAction( gg_trg_Leaver2, function trig_Leaver2_Actions )
+		
+		gg_trg_Leaver3 = CreateTrigger(  )
+		TriggerRegisterPlayerEvent(gg_trg_Leaver3, Player(3), EVENT_PLAYER_LEAVE)
+		TriggerAddAction( gg_trg_Leaver3, function trig_Leaver3_Actions )
+		
+		gg_trg_Leaver4 = CreateTrigger(  )
+		TriggerRegisterPlayerEvent(gg_trg_Leaver4, Player(4), EVENT_PLAYER_LEAVE)
+		TriggerAddAction( gg_trg_Leaver4, function trig_Leaver4_Actions )    
+		
+		gg_trg_Leaver5 = CreateTrigger(  )
+		TriggerRegisterPlayerEvent(gg_trg_Leaver5, Player(5), EVENT_PLAYER_LEAVE)
+		TriggerAddAction( gg_trg_Leaver5, function trig_Leaver5_Actions )
+		
+		gg_trg_Leaver6 = CreateTrigger(  )
+		TriggerRegisterPlayerEvent(gg_trg_Leaver6, Player(6), EVENT_PLAYER_LEAVE)
+		TriggerAddAction( gg_trg_Leaver6, function trig_Leaver6_Actions )
+		
+		gg_trg_Leaver7 = CreateTrigger(  )
+		TriggerRegisterPlayerEvent(gg_trg_Leaver7, Player(7), EVENT_PLAYER_LEAVE)
+		TriggerAddAction( gg_trg_Leaver7, function trig_Leaver7_Actions )
+		
+		gg_trg_Leaver8 = CreateTrigger(  )
+		TriggerRegisterPlayerEvent(gg_trg_Leaver8, Player(8), EVENT_PLAYER_LEAVE)
+		TriggerAddAction( gg_trg_Leaver8, function trig_Leaver8_Actions )
+		
+		gg_trg_Leaver9 = CreateTrigger(  )
+		TriggerRegisterPlayerEvent(gg_trg_Leaver9, Player(9), EVENT_PLAYER_LEAVE)
+		TriggerAddAction( gg_trg_Leaver9, function trig_Leaver9_Actions )
+		
+		gg_trg_Leaver10 = CreateTrigger(  )
+		TriggerRegisterPlayerEvent(gg_trg_Leaver10, Player(10), EVENT_PLAYER_LEAVE)
+		TriggerAddAction( gg_trg_Leaver10, function trig_Leaver10_Actions )
+		
+		gg_trg_Leaver11 = CreateTrigger(  )
+		TriggerRegisterPlayerEvent(gg_trg_Leaver11, Player(11), EVENT_PLAYER_LEAVE)
+		TriggerAddAction( gg_trg_Leaver11, function trig_Leaver11_Actions )
+endpackage
