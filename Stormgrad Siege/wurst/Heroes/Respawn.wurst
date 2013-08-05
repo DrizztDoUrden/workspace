@@ -35,7 +35,7 @@ package Respawn
 	//===========================================================================
 	init
 		trg_Hero_respawn = CreateTrigger(  )
-		TriggerRegisterAnyUnitEventBJ( gg_trg_Hero_respawn, EVENT_PLAYER_UNIT_DEATH )
-		TriggerAddCondition( gg_trg_Hero_respawn, Condition( function trig_Hero_respawn_Conditions ) )
-		TriggerAddAction( gg_trg_Hero_respawn, function trig_Hero_respawn_Actions )
+		TriggerRegisterAnyUnitEventBJ( trg_Hero_respawn, EVENT_PLAYER_UNIT_DEATH )
+		TriggerAddCondition( trg_Hero_respawn, Condition( function trig_Hero_respawn_Conditions ) )
+		TriggerAddAction( trg_Hero_respawn, function trig_Hero_respawn_Actions )
 endpackage

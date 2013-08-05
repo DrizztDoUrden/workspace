@@ -10,7 +10,7 @@ package MultiBoard
 	integer array series
 	
     
-	function onPick(unit hero)
+	public function onPick(unit hero)
 		integer i = GetPlayerId(GetOwningPlayer(hero))
 		
 		if (i < 7)
@@ -18,7 +18,7 @@ package MultiBoard
 		if (i > 1)
 			MultiboardSetItemValue(MultiboardGetItem(board, i, 2), GetUnitName(hero))
 	
-	function onLvlMaxing(unit hero)
+	public function onLvlMaxing(unit hero)
 		integer i = 0
 		
 		while (i < 4)
@@ -132,10 +132,10 @@ package MultiBoard
 		MultiboardSetItemWidth(MultiboardGetItem(board, 0, 0), 0.01)
 		MultiboardSetItemStyle(MultiboardGetItem(board, 0, 1), true, false)
 		MultiboardSetItemWidth(MultiboardGetItem(board, 0, 1), 0.07)
-		MultiboardSetItemValue(MultiboardGetItem(board, 0, 1), "Имя")
+		MultiboardSetItemValue(MultiboardGetItem(board, 0, 1), "Nick")
 		MultiboardSetItemStyle(MultiboardGetItem(board, 0, 2), true, false)
 		MultiboardSetItemWidth(MultiboardGetItem(board, 0, 2), 0.10)
-		MultiboardSetItemValue(MultiboardGetItem(board, 0, 2), "Класс")
+		MultiboardSetItemValue(MultiboardGetItem(board, 0, 2), "Hero")
 		MultiboardSetItemStyle(MultiboardGetItem(board, 0, 3), true, false)
 		MultiboardSetItemWidth(MultiboardGetItem(board, 0, 3), 0.02)
 		MultiboardSetItemValue(MultiboardGetItem(board, 0, 3), "L")
@@ -148,7 +148,7 @@ package MultiBoard
 		MultiboardSetItemStyle(MultiboardGetItem(board, 0, 6), true, false)
 		MultiboardSetItemWidth(MultiboardGetItem(board, 0, 6), 0.02)
 		MultiboardSetItemValue(MultiboardGetItem(board, 0, 6), "S")
-		MultiboardSetItemValue(MultiboardGetItem(board, 1, 0), "|cffff0000Орда|r")
+		MultiboardSetItemValue(MultiboardGetItem(board, 1, 0), "|cffff0000Horde|r")
 		MultiboardSetItemStyle(MultiboardGetItem(board, 1, 0), true, false)
 		MultiboardSetItemStyle(MultiboardGetItem(board, 1, 1), true, false)
 		MultiboardSetItemStyle(MultiboardGetItem(board, 1, 2), true, false)
@@ -156,7 +156,7 @@ package MultiBoard
 		MultiboardSetItemStyle(MultiboardGetItem(board, 1, 4), true, false)
 		MultiboardSetItemStyle(MultiboardGetItem(board, 1, 5), true, false)
 		MultiboardSetItemStyle(MultiboardGetItem(board, 1, 6), true, false)
-		MultiboardSetItemValue(MultiboardGetItem(board, 6, 0), "|cff0000ffАльянс|r")
+		MultiboardSetItemValue(MultiboardGetItem(board, 6, 0), "|cff0000ffAlliance|r")
 		MultiboardSetItemStyle(MultiboardGetItem(board, 6, 0), true, false)
 		MultiboardSetItemStyle(MultiboardGetItem(board, 6, 1), true, false)
 		MultiboardSetItemStyle(MultiboardGetItem(board, 6, 2), true, false)

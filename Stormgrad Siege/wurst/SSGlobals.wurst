@@ -1,7 +1,18 @@
 package SSGlobals
 	public unit array udg_Curent_Player_Hero
 	public unit array udg_Circles
+	public unit udg_Thunder_caster
+	public unit udg_Alliance_Maxlevel
+	public unit udg_Horde_Maxlevel
+	public unit udg_DK
+	public unit udg_Sniper
+	public unit udg_Oderg
+	public unit udg_Ecsgumation_owner
+	public boolean array udg_Player_already_has_hero
 	public boolean array udg_Hero_is_dead
 	public boolean udg_DUEL
-	public unit udg_Sniper
+	public boolean udg_alreadypickedA
+	public boolean udg_alreadypickedH
+	public boolean udg_QA
+	public boolean udg_QH
 endpackage

@@ -1,0 +1,23 @@
+package LevelCounter
+	import SSGlobals
+	import MultiBoard
+	
+	trigger gg_trg_Hero_level_count
+	
+	function trig_Hero_level_count_Actions()
+		if (GetPlayerController(GetOwningPlayer(GetTriggerUnit())) == MAP_CONTROL_USER)
+			if (GetPlayerRace(GetOwningPlayer(GetTriggerUnit())) == RACE_HUMAN)
+				if (GetHeroLevel(GetTriggerUnit()) > GetHeroLevel(udg_Alliance_Maxlevel))
+					udg_Alliance_Maxlevel = GetTriggerUnit()
+					onLvlMaxing(udg_Alliance_Maxlevel)
+			else
+				if (GetHeroLevel(GetTriggerUnit()) > GetHeroLevel(udg_Horde_Maxlevel))
+					udg_Horde_Maxlevel = GetTriggerUnit()
+					onLvlMaxing(udg_Horde_Maxlevel)
+	
+	//===========================================================================
+	init
+		gg_trg_Hero_level_count = CreateTrigger(  )
+		TriggerRegisterAnyUnitEventBJ( gg_trg_Hero_level_count, EVENT_PLAYER_HERO_LEVEL )
+		TriggerAddAction( gg_trg_Hero_level_count, function trig_Hero_level_count_Actions )
+endpackage
