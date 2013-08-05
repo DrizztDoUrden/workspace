@@ -1,0 +1,76 @@
+package Table
+	hashtable main
+	Table last
+	
+	init
+		main = InitHashtable()
+		last = 1 castTo Table
+	
+	class Table
+		static function create() returns Table
+			Table t
+			if (LoadInteger(main, 0, 0) != 0)
+				t = LoadInteger(main, 0, 0) castTo Table
+				SaveInteger(main, 0, 0, LoadInteger(main, 0, t castTo integer))
+			else
+				t = last 
+			SaveInteger(main, 0, t castTo integer, 0)
+			return t
+		
+		ondestroy
+			SaveInteger(main, 0, this castTo integer, LoadInteger(main, 0, 0))
+			SaveInteger(main, 0, 0, this castTo integer)
+		
+		//Real
+		function hasReal(integer key) returns boolean
+			return HaveSavedReal(main, this castTo integer, key)
+			
+		function getReal(integer key) returns real
+			return LoadReal(main, this castTo integer, key)
+		
+		function set(integer key, real value)
+			SaveReal(main, this castTo integer, key, value)
+		
+		function removeReal(integer key)
+			RemoveSavedReal(main, this castTo integer, key)
+		
+		//Boolean
+		function hasBoolean(integer key) returns boolean
+			return HaveSavedBoolean(main, this castTo integer, key)
+			
+		function getBoolean(integer key) returns boolean
+			return LoadBoolean(main, this castTo integer, key)
+		
+		function set(integer key, boolean value)
+			SaveBoolean(main, this castTo integer, key, value)
+		
+		function removeBoolean(integer key)
+			RemoveSavedBoolean(main, this castTo integer, key)
+		
+		//String
+		function hasString(integer key) returns boolean
+			return HaveSavedString(main, this castTo integer, key)
+			
+		function getString(integer key) returns string
+			return LoadStr(main, this castTo integer, key)
+		
+		function set(integer key, string value)
+			SaveStr(main, this castTo integer, key, value)
+		
+		function removeString(integer key)
+			RemoveSavedString(main, this castTo integer, key)
+		
+		//Player
+		function getPlayer(integer key) returns player
+			return LoadPlayerHandle(main, this castTo integer, key)
+		
+		function set(integer key, player value)
+			SavePlayerHandle(main, this castTo integer, key, value)
+		
+		//Player
+		function getWidget(integer key) returns widget
+			return LoadWidgetHandle(main, this castTo integer, key)
+		
+		function set(integer key, widget value)
+			SaveWidgetHandle(main, this castTo integer, key, value)
+endpackage
