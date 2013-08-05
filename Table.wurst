@@ -1,0 +1,321 @@
+package Table
+	hashtable main
+	Table last
+	
+	init
+		main = InitHashtable()
+		last = 1 castTo Table
+	
+	class Table
+		static function create() returns Table
+			Table t
+			if (LoadInteger(main, 0, 0) != 0)
+				t = LoadInteger(main, 0, 0) castTo Table
+				SaveInteger(main, 0, 0, LoadInteger(main, 0, t castTo integer))
+			else
+				t = last 
+			SaveInteger(main, 0, t castTo integer, 0)
+			return t
+		
+		ondestroy
+			SaveInteger(main, 0, this castTo integer, LoadInteger(main, 0, 0))
+			SaveInteger(main, 0, 0, this castTo integer)
+		
+		//Real
+		function hasReal(integer key) returns boolean
+			return HaveSavedReal(main, this castTo integer, key)
+			
+		function getReal(integer key) returns real
+			return LoadReal(main, this castTo integer, key)
+		
+		function setReal(integer key, real value)
+			SaveReal(main, this castTo integer, key, value)
+		
+		function removeReal(integer key)
+			RemoveSavedReal(main, this castTo integer, key)
+		
+		//Boolean
+		function hasBoolean(integer key) returns boolean
+			return HaveSavedBoolean(main, this castTo integer, key)
+			
+		function getBoolean(integer key) returns boolean
+			return LoadBoolean(main, this castTo integer, key)
+		
+		function setBoolean(integer key, boolean value)
+			SaveBoolean(main, this castTo integer, key, value)
+		
+		function removeBoolean(integer key)
+			RemoveSavedBoolean(main, this castTo integer, key)
+		
+		//String
+		function hasString(integer key) returns boolean
+			return HaveSavedString(main, this castTo integer, key)
+			
+		function getString(integer key) returns string
+			return LoadStr(main, this castTo integer, key)
+		
+		function setString(integer key, string value)
+			SaveStr(main, this castTo integer, key, value)
+		
+		function removeString(integer key)
+			RemoveSavedString(main, this castTo integer, key)
+		
+		//Player
+		function getPlayer(integer key) returns player
+			return LoadPlayerHandle(main, this castTo integer, key)
+		
+		function setPlayer(integer key, player value)
+			SavePlayerHandle(main, this castTo integer, key, value)
+		
+		//Widget
+		function getWidget(integer key) returns widget
+			return LoadWidgetHandle(main, this castTo integer, key)
+		
+		function setWidget(integer key, widget value)
+			SaveWidgetHandle(main, this castTo integer, key, value)
+		
+		//Destructable
+		function getDestructable(integer key) returns destructable
+			return LoadDestructableHandle(main, this castTo integer, key)
+		
+		function setDestructable(integer key, destructable value)
+			SaveDestructableHandle(main, this castTo integer, key, value)
+		
+		//Item
+		function getItem(integer key) returns item
+			return LoadItemHandle(main, this castTo integer, key)
+		
+		function setItem(integer key, item value)
+			SaveItemHandle(main, this castTo integer, key, value)
+		
+		//Ability
+		function getAbility(integer key) returns ability
+			return LoadAbilityHandle(main, this castTo integer, key)
+		
+		function setAbility(integer key, ability value)
+			SaveAbilityHandle(main, this castTo integer, key, value)
+		
+		//Timer
+		function getTimer(integer key) returns timer
+			return LoadTimerHandle(main, this castTo integer, key)
+		
+		function setTimer(integer key, timer value)
+			SaveTimerHandle(main, this castTo integer, key, value)
+		
+		//Trigger
+		function getTrigger(integer key) returns trigger
+			return LoadTriggerHandle(main, this castTo integer, key)
+		
+		function setTrigger(integer key, trigger value)
+			SaveTriggerHandle(main, this castTo integer, key, value)
+		
+		//TriggerCondition
+		function getTriggerCondition(integer key) returns triggercondition
+			return LoadTriggerConditionHandle(main, this castTo integer, key)
+		
+		function setTriggerCondition(integer key, triggercondition value)
+			SaveTriggerConditionHandle(main, this castTo integer, key, value)
+		
+		//TriggerAction
+		function getTriggerAction(integer key) returns triggeraction
+			return LoadTriggerActionHandle(main, this castTo integer, key)
+		
+		function setTriggerAction(integer key, triggeraction value)
+			SaveTriggerActionHandle(main, this castTo integer, key, value)
+		
+		//TriggerEvent
+		function getTriggerEvent(integer key) returns event
+			return LoadTriggerEventHandle(main, this castTo integer, key)
+		
+		function setTriggerEvent(integer key, event value)
+			SaveTriggerEventHandle(main, this castTo integer, key, value)
+		
+		//Force
+		function getForce(integer key) returns force
+			return LoadForceHandle(main, this castTo integer, key)
+		
+		function setForce(integer key, force value)
+			SaveForceHandle(main, this castTo integer, key, value)
+		
+		//Group
+		function getGroup(integer key) returns group
+			return LoadGroupHandle(main, this castTo integer, key)
+		
+		function setGroup(integer key, group value)
+			SaveGroupHandle(main, this castTo integer, key, value)
+		
+		//Location
+		function getLocation(integer key) returns location
+			return LoadLocationHandle(main, this castTo integer, key)
+		
+		function setLocation(integer key, location value)
+			SaveLocationHandle(main, this castTo integer, key, value)
+		
+		//Rect
+		function getRect(integer key) returns rect
+			return LoadRectHandle(main, this castTo integer, key)
+		
+		function setRect(integer key, rect value)
+			SaveRectHandle(main, this castTo integer, key, value)
+		
+		//BooleanExpr
+		function getBooleanExpr(integer key) returns boolexpr
+			return LoadBooleanExprHandle(main, this castTo integer, key)
+		
+		function setBooleanExpr(integer key, boolexpr value)
+			SaveBooleanExprHandle(main, this castTo integer, key, value)
+		
+		//TriggerEvent
+		function getSoundEvent(integer key) returns sound
+			return LoadSoundHandle(main, this castTo integer, key)
+		
+		function setSound(integer key, sound value)
+			SaveSoundHandle(main, this castTo integer, key, value)
+		
+		//Effect
+		function getEffect(integer key) returns effect
+			return LoadEffectHandle(main, this castTo integer, key)
+		
+		function setEffect(integer key, effect value)
+			SaveEffectHandle(main, this castTo integer, key, value)
+		
+		//UnitPool
+		function getUnitPool(integer key) returns unitpool
+			return LoadUnitPoolHandle(main, this castTo integer, key)
+		
+		function setUnitPool(integer key, unitpool value)
+			SaveUnitPoolHandle(main, this castTo integer, key, value)
+		
+		//ItemPool
+		function getItemPool(integer key) returns itempool
+			return LoadItemPoolHandle(main, this castTo integer, key)
+		
+		function setItemPool(integer key, itempool value)
+			SaveItemPoolHandle(main, this castTo integer, key, value)
+		
+		//Quest
+		function getQuest(integer key) returns quest
+			return LoadQuestHandle(main, this castTo integer, key)
+		
+		function setQuest(integer key, quest value)
+			SaveQuestHandle(main, this castTo integer, key, value)
+		
+		//QuestItem
+		function getQuestItem(integer key) returns questitem
+			return LoadQuestItemHandle(main, this castTo integer, key)
+		
+		function setQuestItem(integer key, questitem value)
+			SaveQuestItemHandle(main, this castTo integer, key, value)
+		
+		//DefeatCondition
+		function getDefeatCondition(integer key) returns defeatcondition
+			return LoadDefeatConditionHandle(main, this castTo integer, key)
+		
+		function setDefeatCondition(integer key, defeatcondition value)
+			SaveDefeatConditionHandle(main, this castTo integer, key, value)
+		
+		//TimerDialog
+		function getTimerDialog(integer key) returns timerdialog
+			return LoadTimerDialogHandle(main, this castTo integer, key)
+		
+		function setTimerDialog(integer key, timerdialog value)
+			SaveTimerDialogHandle(main, this castTo integer, key, value)
+		
+		//Leaderboard
+		function getLeaderboard(integer key) returns leaderboard
+			return LoadLeaderboardHandle(main, this castTo integer, key)
+		
+		function setLeaderboard(integer key, leaderboard value)
+			SaveLeaderboardHandle(main, this castTo integer, key, value)
+		
+		//Multiboard
+		function getMultiboard(integer key) returns multiboard
+			return LoadMultiboardHandle(main, this castTo integer, key)
+		
+		function setMultiboard(integer key, multiboard value)
+			SaveMultiboardHandle(main, this castTo integer, key, value)
+		
+		//MultiboardItem
+		function getMultiboardItem(integer key) returns multiboarditem
+			return LoadMultiboardItemHandle(main, this castTo integer, key)
+		
+		function setMultiboardItem(integer key, multiboarditem value)
+			SaveMultiboardItemHandle(main, this castTo integer, key, value)
+		
+		//Trackable
+		function getTrackable(integer key) returns trackable
+			return LoadTrackableHandle(main, this castTo integer, key)
+		
+		function setTrackable(integer key, trackable value)
+			SaveTrackableHandle(main, this castTo integer, key, value)
+		
+		//Dialog
+		function getDialog(integer key) returns dialog
+			return LoadDialogHandle(main, this castTo integer, key)
+		
+		function setDialog(integer key, dialog value)
+			SaveDialogHandle(main, this castTo integer, key, value)
+		
+		//Button
+		function getButton(integer key) returns button
+			return LoadButtonHandle(main, this castTo integer, key)
+		
+		function setButton(integer key, button value)
+			SaveButtonHandle(main, this castTo integer, key, value)
+		
+		//TextTag
+		function getTextTag(integer key) returns texttag
+			return LoadTextTagHandle(main, this castTo integer, key)
+		
+		function setTextTag(integer key, texttag value)
+			SaveTextTagHandle(main, this castTo integer, key, value)
+		
+		//Lightning
+		function getLightningItem(integer key) returns lightning
+			return LoadLightningHandle(main, this castTo integer, key)
+		
+		function setLightning(integer key, lightning value)
+			SaveLightningHandle(main, this castTo integer, key, value)
+		
+		//Image
+		function getImage(integer key) returns image
+			return LoadImageHandle(main, this castTo integer, key)
+		
+		function setImage(integer key, image value)
+			SaveImageHandle(main, this castTo integer, key, value)
+		
+		//Ubersplat
+		function getUbersplat(integer key) returns ubersplat
+			return LoadUbersplatHandle(main, this castTo integer, key)
+		
+		function setUbersplat(integer key, ubersplat value)
+			SaveUbersplatHandle(main, this castTo integer, key, value)
+		
+		//Region
+		function getRegion(integer key) returns region
+			return LoadRegionHandle(main, this castTo integer, key)
+		
+		function setRegion(integer key, region value)
+			SaveRegionHandle(main, this castTo integer, key, value)
+		
+		//FogState
+		function getFogState(integer key) returns fogstate
+			return LoadFogStateHandle(main, this castTo integer, key)
+		
+		function setFogState(integer key, fogstate value)
+			SaveFogStateHandle(main, this castTo integer, key, value)
+		
+		//FogModifier
+		function getFogModifier(integer key) returns fogmodifier
+			return LoadFogModifierHandle(main, this castTo integer, key)
+		
+		function setFogModifier(integer key, fogmodifier value)
+			SaveFogModifierHandle(main, this castTo integer, key, value)
+		
+		//Hashtable
+		function getHashtable(integer key) returns hashtable
+			return LoadHashtableHandle(main, this castTo integer, key)
+		
+		function setHashtable(integer key, hashtable value)
+			SaveHashtableHandle(main, this castTo integer, key, value)
+endpackage
