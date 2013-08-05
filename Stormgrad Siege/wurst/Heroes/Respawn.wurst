@@ -1,0 +1,41 @@
+package Respawn
+	import SSGlobals
+	trigger trg_Hero_respawn
+	
+	function trig_Hero_respawn_Conditions() returns boolean
+		return GetOwningPlayer(GetTriggerUnit()) != Player(1) and GetOwningPlayer(GetTriggerUnit()) != Player(PLAYER_NEUTRAL_PASSIVE) and GetOwningPlayer(GetTriggerUnit()) != Player(PLAYER_NEUTRAL_AGGRESSIVE) and IsUnitType(GetTriggerUnit(), UNIT_TYPE_HERO) == true
+	
+	function trig_Hero_respawn_Actions()
+		unit u = GetTriggerUnit()
+		location l
+		timer t = CreateTimer()
+		timerdialog timerwindow = CreateTimerDialog(t)
+		rect heroresp
+		if (GetPlayerRace(GetOwningPlayer(GetTriggerUnit())) == RACE_HUMAN)
+			heroresp = gg_rct_Hero_respawn_A
+		else
+			heroresp = gg_rct_Hero_respawn_H
+		l = Location(GetRectCenterX(gg_rct_Hero_respawn_A), GetRectCenterY(gg_rct_Hero_respawn_A))
+		TimerDialogDisplay( timerwindow, GetLocalPlayer() == GetOwningPlayer(u) )
+		TimerStart( t, I2R(GetHeroLevel(u)), false, null )
+		udg_Hero_is_dead[1 + GetPlayerId(GetOwningPlayer(u))] = true
+		TriggerSleepAction( I2R(GetHeroLevel(u)) )
+		TimerDialogDisplay( timerwindow, false )
+		udg_Hero_is_dead[1 + GetPlayerId(GetOwningPlayer(u))] = false
+		if (udg_DUEL)
+			ReviveHeroLoc( u, l, true )
+			if (GetLocalPlayer() == GetOwningPlayer(u))
+				PanCameraToTimed(GetRectCenterX(heroresp), GetRectCenterY(heroresp), 0.7)
+				PauseUnit( u, true )
+		else
+			ReviveHeroLoc( u, l, true )
+			PauseUnit( u, false )
+		RemoveLocation(l)
+	
+	//===========================================================================
+	init
+		trg_Hero_respawn = CreateTrigger(  )
+		TriggerRegisterAnyUnitEventBJ( gg_trg_Hero_respawn, EVENT_PLAYER_UNIT_DEATH )
+		TriggerAddCondition( gg_trg_Hero_respawn, Condition( function trig_Hero_respawn_Conditions ) )
+		TriggerAddAction( gg_trg_Hero_respawn, function trig_Hero_respawn_Actions )
+endpackage

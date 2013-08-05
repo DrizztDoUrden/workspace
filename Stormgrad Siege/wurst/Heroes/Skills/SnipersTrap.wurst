@@ -1,0 +1,100 @@
+package SnipersTrap
+	import SSGlobals
+	trigger array traptrigs
+	trigger gg_trg_Sniper_trap
+	triggeraction array triggeracts
+	triggercondition array triggerconds
+	region array triggerregs
+	unit array udg_Traps
+
+	function trig_sniper_trap_trig_Conditions() returns boolean
+		return IsUnitEnemy(GetEnteringUnit(), GetOwningPlayer(udg_Sniper)) and IsUnitType(GetEnteringUnit(), UNIT_TYPE_HERO)
+	
+	function trig_sniper_trap1_trig_Actions()
+		unit u = udg_Traps[0]
+		UnitAddAbility( u, 'A041' )
+		SetUnitAbilityLevel( u, 'A041', 1 + GetUnitAbilityLevel(udg_Sniper, 'A040') div 2 )
+		IssueTargetOrder( u, "ensnare", GetEnteringUnit() )
+		udg_Traps[0] = null
+		RemoveRegion(triggerregs[1])
+		UnitApplyTimedLife(u, 'Bhwd', 1)
+		TriggerRemoveCondition(GetTriggeringTrigger(), triggerconds[1])
+		TriggerRemoveAction(GetTriggeringTrigger(), triggeracts[1])
+		DestroyTrigger(GetTriggeringTrigger())
+	
+	function trig_sniper_trap2_trig_Actions()
+		unit u = udg_Traps[1]
+		UnitAddAbility( u, 'A041' )
+		SetUnitAbilityLevel( u, 'A041', 1 + GetUnitAbilityLevel(udg_Sniper, 'A040') div 2 )
+		IssueTargetOrder( u, "ensnare", GetEnteringUnit() )
+		udg_Traps[1] = null
+		RemoveRegion(triggerregs[1])
+		UnitApplyTimedLife(u, 'Bhwd', 1)
+		TriggerRemoveCondition(GetTriggeringTrigger(), triggerconds[1])
+		TriggerRemoveAction(GetTriggeringTrigger(), triggeracts[1])
+		DestroyTrigger(GetTriggeringTrigger())
+	
+	function trig_sniper_trap3_trig_Actions()
+		unit u = udg_Traps[2]
+		UnitAddAbility( u, 'A041' )
+		SetUnitAbilityLevel( u, 'A041', 1 + GetUnitAbilityLevel(udg_Sniper, 'A040') div 2 )
+		IssueTargetOrder( u, "ensnare", GetEnteringUnit() )
+		udg_Traps[2] = null
+		RemoveRegion(triggerregs[2])
+		UnitApplyTimedLife(u, 'Bhwd', 1)
+		TriggerRemoveCondition(GetTriggeringTrigger(), triggerconds[2])
+		TriggerRemoveAction(GetTriggeringTrigger(), triggeracts[2])
+		DestroyTrigger(GetTriggeringTrigger())
+	
+	function trig_Sniper_trap_Conditions() returns boolean
+		return GetSpellAbilityId() == 'A040'
+	
+	function trig_Sniper_trap_Actions()
+		unit trap
+		rect rct
+		location l1
+		location l2
+		integer i = 0
+		
+		while (i < GetUnitAbilityLevel(udg_Sniper, 'A040') / 2 and udg_Traps[i] != null)
+			i = i + 1
+		
+		if (i > GetUnitAbilityLevel(udg_Sniper, 'A040') / 2)
+			i = GetRandomInt(0, GetUnitAbilityLevel(udg_Sniper, 'A040') div 2)
+			TriggerRemoveAction(traptrigs[i], triggeracts[i])
+			TriggerRemoveCondition(traptrigs[i], triggerconds[i])
+			DestroyTrigger(traptrigs[i])
+			RemoveUnit(udg_Traps[i])
+			RemoveRegion(triggerregs[i])
+		traptrigs[i] = CreateTrigger()
+		triggerconds[i] = TriggerAddCondition( traptrigs[i], Condition(function trig_sniper_trap_trig_Conditions) )
+		if (i == 0)
+			triggeracts[i] = TriggerAddAction( traptrigs[i], function trig_sniper_trap1_trig_Actions )
+		else if (i == 1)
+			triggeracts[i] = TriggerAddAction( traptrigs[i], function trig_sniper_trap2_trig_Actions )
+		else if (i == 2)
+			triggeracts[i] = TriggerAddAction( traptrigs[i], function trig_sniper_trap3_trig_Actions )
+		
+		triggerregs[i] = CreateRegion()
+		l1 = Location(GetLocationX(GetSpellTargetLoc()) - 100, GetLocationY(GetSpellTargetLoc()) - 100)
+		l2 = Location(GetLocationX(GetSpellTargetLoc()) + 100, GetLocationY(GetSpellTargetLoc()) + 100)
+		rct = RectFromLoc(l1, l2)
+		RegionAddRect(triggerregs[i], rct)
+		TriggerRegisterEnterRegion(traptrigs[i], triggerregs[i], null)
+		RemoveRect(rct)
+		RemoveLocation(l2)
+		RemoveLocation(l1)
+		
+		udg_Traps[i] = CreateUnitAtLoc(GetOwningPlayer(udg_Sniper), 'h00N', GetSpellTargetLoc(), bj_UNIT_FACING )
+	
+	//===========================================================================
+	init
+		integer index
+		gg_trg_Sniper_trap = CreateTrigger(  )
+		index = 3
+		while (index <= 10)
+			TriggerRegisterPlayerUnitEvent(gg_trg_Sniper_trap, Player(index), EVENT_PLAYER_UNIT_SPELL_EFFECT, null)
+			index = index + 1
+		TriggerAddCondition( gg_trg_Sniper_trap, Condition( function trig_Sniper_trap_Conditions ) )
+		TriggerAddAction( gg_trg_Sniper_trap, function trig_Sniper_trap_Actions )
+endpackage

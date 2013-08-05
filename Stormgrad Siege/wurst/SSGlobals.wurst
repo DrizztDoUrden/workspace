@@ -1,4 +1,7 @@
 package SSGlobals
 	public unit array udg_Curent_Player_Hero
 	public unit array udg_Circles
+	public boolean array udg_Hero_is_dead
+	public boolean udg_DUEL
+	public unit udg_Sniper
 endpackage
