@@ -11,9 +11,9 @@ package SSGlobals
 	public group udg_Skeleton_group
 	public boolean array udg_Player_already_has_hero
 	public boolean array udg_Hero_is_dead
-	public boolean udg_DUEL
-	public boolean udg_alreadypickedA
-	public boolean udg_alreadypickedH
-	public boolean udg_QA
-	public boolean udg_QH
+	public boolean udg_DUEL = false
+	public boolean udg_alreadypickedA = false
+	public boolean udg_alreadypickedH = false
+	public boolean udg_QA = false
+	public boolean udg_QH = false
 endpackage

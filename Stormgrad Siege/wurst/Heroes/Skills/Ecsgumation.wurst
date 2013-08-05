@@ -2,22 +2,24 @@ package Ecsgumation
 	import SSGlobals
 	trigger gg_trg_Ecsgumation
 	
-	function trig_Ecsgumation_Conditions() returns boolean
-		return ( GetUnitState(udg_Ecsgumation_owner, UNIT_STATE_LIFE) > 0 and not IsUnitPaused(udg_Ecsgumation_owner) )
-	
 	function trig_Ecsgumation_Actions()
 		effect ef
-		unit tempscel = CreateUnitAtLoc(GetOwningPlayer(udg_Ecsgumation_owner), 'n00I', GetUnitLoc(udg_Ecsgumation_owner), bj_UNIT_FACING)
-		GroupAddUnit( udg_Skeleton_group, tempscel )
-		UnitApplyTimedLife( tempscel, 'BTLF', GetHeroInt(udg_Ecsgumation_owner, true) / 2 )
-		ef = AddSpecialEffectTarget( "Abilities\\Spells\\Undead\\Darksummoning\\DarkSummonTarget.mdl", tempscel, "origin" )
-		TriggerSleepAction( 3.0 )
-		DestroyEffect(ef)
+		BJDebugMsg("Test")
+		location l
+		unit tempscel
+		if ( GetUnitState(udg_Ecsgumation_owner, UNIT_STATE_LIFE) > 0 and not IsUnitPaused(udg_Ecsgumation_owner) )
+			l = GetUnitLoc(udg_Ecsgumation_owner)
+			tempscel = CreateUnitAtLoc(GetOwningPlayer(udg_Ecsgumation_owner), 'n00I', l, bj_UNIT_FACING)
+			GroupAddUnit( udg_Skeleton_group, tempscel )
+			UnitApplyTimedLife( tempscel, 'BTLF', GetHeroInt(udg_Ecsgumation_owner, true) / 2 )
+			ef = AddSpecialEffectTarget( "Abilities\\Spells\\Undead\\Darksummoning\\DarkSummonTarget.mdl", tempscel, "origin" )
+			TriggerSleepAction( 3.0 )
+			DestroyEffect(ef)
+			RemoveLocation(l)
 	
 	//===========================================================================
-	function initTrig_Ecsgumation()
+	init
 		gg_trg_Ecsgumation = CreateTrigger(  )
 		TriggerRegisterTimerEventPeriodic( gg_trg_Ecsgumation, 3.00 )
-		TriggerAddCondition( gg_trg_Ecsgumation, Condition( function trig_Ecsgumation_Conditions ) )
 		TriggerAddAction( gg_trg_Ecsgumation, function trig_Ecsgumation_Actions )
 endpackage
