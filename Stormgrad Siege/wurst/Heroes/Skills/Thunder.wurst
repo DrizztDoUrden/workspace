@@ -43,9 +43,9 @@ package Thunder
 	//===========================================================================
 	init
 		switcher = CreateTrigger(  )
+		gg_trg_Thunder_periodic = CreateTrigger(  )
 		TriggerRegisterAnyUnitEventBJ( switcher, EVENT_PLAYER_UNIT_SPELL_CAST )
 		TriggerAddAction( switcher, function switcher_Switch )
-		gg_trg_Thunder_periodic = CreateTrigger(  )
 		DisableTrigger( gg_trg_Thunder_periodic )
 		TriggerRegisterTimerEvent( gg_trg_Thunder_periodic, 1.00, true )
 		TriggerAddCondition( gg_trg_Thunder_periodic, Condition( function trig_Thunder_periodic_Conditions ) )

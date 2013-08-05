@@ -11,6 +11,7 @@ package Respawn
 		timer t = CreateTimer()
 		timerdialog timerwindow = CreateTimerDialog(t)
 		rect heroresp
+		BJDebugMsg("adasddasdas")
 		if (GetPlayerRace(GetOwningPlayer(GetTriggerUnit())) == RACE_HUMAN)
 			heroresp = gg_rct_Hero_respawn_A
 		else
@@ -22,13 +23,12 @@ package Respawn
 		TriggerSleepAction( I2R(GetHeroLevel(u)) )
 		TimerDialogDisplay( timerwindow, false )
 		udg_Hero_is_dead[1 + GetPlayerId(GetOwningPlayer(u))] = false
+		ReviveHeroLoc( u, l, true )
 		if (udg_DUEL)
-			ReviveHeroLoc( u, l, true )
+			PauseUnit( u, true )
+		else
 			if (GetLocalPlayer() == GetOwningPlayer(u))
 				PanCameraToTimed(GetRectCenterX(heroresp), GetRectCenterY(heroresp), 0.7)
-				PauseUnit( u, true )
-		else
-			ReviveHeroLoc( u, l, true )
 			PauseUnit( u, false )
 		RemoveLocation(l)
 	
