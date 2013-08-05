@@ -8,6 +8,7 @@ package SSGlobals
 	public unit udg_Sniper
 	public unit udg_Oderg
 	public unit udg_Ecsgumation_owner
+	public group udg_Skeleton_group
 	public boolean array udg_Player_already_has_hero
 	public boolean array udg_Hero_is_dead
 	public boolean udg_DUEL
