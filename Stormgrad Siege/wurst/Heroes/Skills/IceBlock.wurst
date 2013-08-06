@@ -1,0 +1,21 @@
+package IceBlock
+	import SSGlobals
+	trigger trg_Ice_Block
+	
+	function trig_Ice_Block_Actions()
+		unit u = GetTriggerUnit()
+		if (GetSpellAbilityId() == 'A01T')
+			SetUnitState(u, UNIT_STATE_MANA, GetUnitState(u, UNIT_STATE_MANA) + GetUnitState(u, UNIT_STATE_MAX_MANA) * 20)
+			PauseUnit( u, true )
+			SetUnitTimeScale(u, 0)
+			TriggerSleepAction( 10.00 )
+			if (not udg_DUEL)
+				PauseUnit( u, false )
+			SetUnitTimeScale(u, 1)
+			UnitRemoveAbility(u, 'B005')
+
+	init
+		trg_Ice_Block = CreateTrigger(  )
+		TriggerRegisterAnyUnitEventBJ( trg_Ice_Block, EVENT_PLAYER_UNIT_SPELL_EFFECT )
+		TriggerAddAction( trg_Ice_Block, function trig_Ice_Block_Actions )
+endpackage
