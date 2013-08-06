@@ -1,6 +1,7 @@
 package Choosing
 	import SSGlobals
 	import MultiBoard
+	import Inquisitor
 	player udg_Owner
 	unit udg_Sold_unit
 	trigger trg_HERO_CHOISE
@@ -99,12 +100,14 @@ package Choosing
 		SetPlayerAlliance(udg_Owner, Player(11), ALLIANCE_SHARED_VISION, true)
 		if ( GetUnitTypeId(udg_Sold_unit) == 'U003' )
 			udg_DK = udg_Sold_unit
-		if ( GetUnitTypeId(udg_Sold_unit) == 'H007' )
+		else if ( GetUnitTypeId(udg_Sold_unit) == 'H007' )
 			udg_Sniper = udg_Sold_unit
-		if ( GetUnitTypeId(udg_Sold_unit) == 'O000' )
+		else if ( GetUnitTypeId(udg_Sold_unit) == 'O000' )
 			udg_Oderg = udg_Sold_unit
-		if ( GetUnitTypeId(udg_Sold_unit) == 'H006' )
+		else if ( GetUnitTypeId(udg_Sold_unit) == 'H006' )
 			udg_Ecsgumation_owner = udg_Sold_unit
+		else if ( GetUnitTypeId(udg_Sold_unit) == 'H00O' )
+			initializeInquisitor(udg_Sold_unit)
 		SetPlayerTechMaxAllowed(udg_Owner, 'R000', 0)
 		SetPlayerTechMaxAllowed(udg_Owner, 'R001', 0)
 		SetPlayerTechMaxAllowed(udg_Owner, 'R002', 0)
