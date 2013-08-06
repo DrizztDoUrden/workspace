@@ -11,12 +11,11 @@ package Respawn
 		timer t = CreateTimer()
 		timerdialog timerwindow = CreateTimerDialog(t)
 		rect heroresp
-		BJDebugMsg("adasddasdas")
-		if (GetPlayerRace(GetOwningPlayer(GetTriggerUnit())) == RACE_HUMAN)
+		if (GetPlayerRace(GetOwningPlayer(u)) == RACE_HUMAN)
 			heroresp = gg_rct_Hero_respawn_A
 		else
 			heroresp = gg_rct_Hero_respawn_H
-		l = Location(GetRectCenterX(gg_rct_Hero_respawn_A), GetRectCenterY(gg_rct_Hero_respawn_A))
+		l = Location(GetRectCenterX(heroresp), GetRectCenterY(heroresp))
 		TimerDialogDisplay( timerwindow, GetLocalPlayer() == GetOwningPlayer(u) )
 		TimerStart( t, I2R(GetHeroLevel(u)), false, null )
 		udg_Hero_is_dead[1 + GetPlayerId(GetOwningPlayer(u))] = true

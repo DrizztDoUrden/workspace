@@ -1,0 +1,265 @@
+package Duel
+	import SSGlobals
+	trigger trg_PvP_test
+	trigger trg_Duel_Switcher
+	trigger trg_Duel_Force
+	trigger trg_Duel_Init
+	trigger trg_Duel_Victory
+	boolean udg_Duelenabled
+	boolean udg_Aliance_is_defeated
+	boolean udg_Horde_is_defeated
+	timer udg_Duel_timer
+	timerdialog udg_Duel_timer_window
+	timerdialog array udg_Timer_window
+	
+	function trig_duel_Actions()
+		if (GetTriggerPlayer() == udg_Host)
+			if ( udg_Duelenabled )
+				udg_Duelenabled = false
+				DisplayTextToPlayer(GetLocalPlayer(), 0, 0, "TRIGSTR_205")
+				PauseTimer(udg_Duel_timer)
+				TimerDialogDisplay(udg_Duel_timer_window, false)
+			else
+				udg_Duelenabled = true
+				DisplayTextToPlayer(GetLocalPlayer(), 0, 0, "TRIGSTR_206")
+				ResumeTimer(udg_Duel_timer)
+				TimerDialogDisplay(udg_Duel_timer_window, true)
+	
+	function trig_PvP_test_Actions()
+		if ( udg_PvP_Test )
+			udg_PvP_Test = false
+			DisplayTextToPlayer(GetLocalPlayer(), 0, 0, "TRIGSTR_2717")
+		else
+			udg_PvP_Test = true
+			if TriggerEvaluate(trg_Duel_Init)
+				TriggerExecute(trg_Duel_Init)
+			DisplayTextToPlayer(GetLocalPlayer(), 0, 0, "TRIGSTR_2718")
+			if ( udg_Alliance_Maxlevel != null and GetHeroLevel(udg_Alliance_Maxlevel) < 30)
+				SetHeroLevel(udg_Alliance_Maxlevel, 30, true)
+			if ( udg_Horde_Maxlevel != null and GetHeroLevel(udg_Horde_Maxlevel) < 30)
+				SetHeroLevel(udg_Horde_Maxlevel, 30, true)
+	
+	function trig_Duel_Force_Actions()
+		if ( udg_Duelenabled )
+			if (TriggerEvaluate(trg_Duel_Init))
+				TriggerExecute(trg_Duel_Init)
+		else
+			DisplayTextToPlayer(GetLocalPlayer(), 0, 0, "TRIGSTR_550")
+	
+	function cleanDuelArea()
+		if ( GetEnumUnit() != udg_Alliance_Maxlevel and GetEnumUnit() != udg_Horde_Maxlevel )
+			KillUnit( GetEnumUnit() )
+
+	function moveDuelantsIn()
+		location l
+		if ( GetPlayerRace(GetEnumPlayer()) == RACE_HUMAN )
+			l = Location(GetRectCenterX(gg_rct_A_duel_spw), GetRectCenterY(gg_rct_A_duel_spw))
+		else
+			l = Location(GetRectCenterX(gg_rct_H_duel_spw), GetRectCenterY(gg_rct_H_duel_spw))
+		if (GetLocalPlayer() == GetEnumPlayer())
+			PanCameraToTimed(GetLocationX(l), GetLocationY(l), 0.7)
+		RemoveLocation(l)
+	
+	function trig_Duel_Init_Actions()
+		location l
+		location l2
+		integer index
+		player indexPlayer
+		group g
+		
+		TimerDialogDisplay(udg_Duel_timer_window, false)
+		DisplayTextToPlayer(GetLocalPlayer(), 0, 0, "TRIGSTR_165")
+		udg_DUEL = true
+		if ( GetUnitState(udg_Alliance_Maxlevel, UNIT_STATE_LIFE) <= 0 )
+			if (GetLocalPlayer() == GetOwningPlayer(udg_Alliance_Maxlevel))
+				TimerDialogDisplay(udg_Timer_window[1 + GetPlayerId(GetOwningPlayer(udg_Alliance_Maxlevel))], false)
+			l = Location(GetRectCenterX(gg_rct_Hero_respawn_A), GetRectCenterY(gg_rct_Hero_respawn_A))
+			ReviveHeroLoc( udg_Alliance_Maxlevel, l, false )
+		if ( GetUnitState(udg_Horde_Maxlevel, UNIT_STATE_LIFE) <= 0 )
+			if (GetLocalPlayer() == GetOwningPlayer(udg_Horde_Maxlevel))
+				TimerDialogDisplay(udg_Timer_window[1 + GetPlayerId(GetOwningPlayer(udg_Horde_Maxlevel))], false)
+			l = Location(GetRectCenterX(gg_rct_Hero_respawn_H), GetRectCenterY(gg_rct_Hero_respawn_H))
+			ReviveHeroLoc( udg_Horde_Maxlevel, l, false )
+		bj_pauseAllUnitsFlag = true
+		g = CreateGroup()
+		index = 0
+		while (index < bj_MAX_PLAYER_SLOTS)
+			indexPlayer = Player( index )
+			if (GetPlayerController( indexPlayer ) == MAP_CONTROL_COMPUTER)
+				PauseCompAI( indexPlayer, true )
+			else
+				GroupEnumUnitsOfPlayer( g, indexPlayer, null )
+				ForGroup( g, function PauseAllUnitsBJEnum )
+				GroupClear( g )
+			index = index + 1
+		DestroyGroup(g)
+		StopMusic(true)
+		StartSound(gg_snd_PH1)
+		TriggerSleepAction( 3.00 )
+		DisplayTextToPlayer(GetLocalPlayer(), 0, 0, GetPlayerName(GetOwningPlayer(udg_Horde_Maxlevel)) + ( " ( " + ( GetUnitName(udg_Horde_Maxlevel) + " )" ) ))
+		TriggerSleepAction( 1.00 )
+		DisplayTextToPlayer(GetLocalPlayer(), 0, 0, "TRIGSTR_166")
+		TriggerSleepAction( 1.00 )
+		DisplayTextToPlayer(GetLocalPlayer(), 0, 0, GetPlayerName(GetOwningPlayer(udg_Alliance_Maxlevel)) + ( " ( " + ( GetUnitName(udg_Alliance_Maxlevel) + " )" ) ))
+		TriggerSleepAction( 1.00 )
+		l = Location(GetRectCenterX(gg_rct_H_duel_spw), GetRectCenterY(gg_rct_H_duel_spw))
+		l2 = Location(GetRectCenterX(gg_rct_A_duel_spw), GetRectCenterY(gg_rct_A_duel_spw))
+		SetUnitPositionLoc(udg_Horde_Maxlevel, l)
+		SetUnitFacing(udg_Horde_Maxlevel, bj_RADTODEG * Atan2(GetLocationY(l2) - GetLocationY(l), GetLocationX(l2) - GetLocationX(l)))
+		if ( GetInventoryIndexOfItemTypeBJ(udg_Alliance_Maxlevel, 'hslv') > 0 )
+			UnitAddItem(udg_Circles[1 + GetPlayerId(GetOwningPlayer(udg_Alliance_Maxlevel))], UnitItemInSlot(udg_Alliance_Maxlevel, GetInventoryIndexOfItemTypeBJ(udg_Alliance_Maxlevel, 'hslv') - 1))
+		if ( GetInventoryIndexOfItemTypeBJ(udg_Horde_Maxlevel, 'hslv') > 0 )
+			UnitAddItem(udg_Circles[1 + GetPlayerId(GetOwningPlayer(udg_Horde_Maxlevel))], UnitItemInSlot(udg_Alliance_Maxlevel, GetInventoryIndexOfItemTypeBJ(udg_Horde_Maxlevel, 'hslv') - 1))
+		SetUnitPositionLoc(udg_Alliance_Maxlevel, l2)
+		SetUnitFacing(udg_Alliance_Maxlevel, bj_RADTODEG * Atan2(GetLocationY(l) - GetLocationY(l2), GetLocationX(l) - GetLocationX(l2)))
+		RemoveLocation(l)
+		RemoveLocation(l2)
+		SetUnitState(udg_Alliance_Maxlevel, UNIT_STATE_LIFE, GetUnitState(udg_Alliance_Maxlevel, UNIT_STATE_MAX_LIFE))
+		SetUnitState(udg_Horde_Maxlevel, UNIT_STATE_LIFE, GetUnitState(udg_Alliance_Maxlevel, UNIT_STATE_MAX_LIFE))
+		if ( GetUnitTypeId(udg_Alliance_Maxlevel) == 'U003' )
+			SetUnitState(udg_Alliance_Maxlevel, UNIT_STATE_MANA, 0)
+		else
+			SetUnitState(udg_Alliance_Maxlevel, UNIT_STATE_MANA, GetUnitState(udg_Alliance_Maxlevel, UNIT_STATE_MAX_MANA))
+		if ( GetUnitTypeId(udg_Horde_Maxlevel) == 'U003' ) 
+			SetUnitState(udg_Horde_Maxlevel, UNIT_STATE_MANA, 0)
+		else
+			SetUnitState(udg_Horde_Maxlevel, UNIT_STATE_MANA, GetUnitState(udg_Alliance_Maxlevel, UNIT_STATE_MAX_MANA))
+		UnitRemoveBuffs(udg_Alliance_Maxlevel, true, true)
+		UnitRemoveBuffs(udg_Horde_Maxlevel, true, true)
+		UnitResetCooldown( udg_Alliance_Maxlevel )
+		UnitResetCooldown( udg_Horde_Maxlevel )
+		SuspendHeroXP(udg_Alliance_Maxlevel, true)
+		SuspendHeroXP(udg_Horde_Maxlevel, true)
+		g = CreateGroup()
+		GroupEnumUnitsInRect(g, gg_rct_Duel_Zone, null)
+		ForGroup( g, function cleanDuelArea )
+		ForForce( bj_FORCE_ALL_PLAYERS, function moveDuelantsIn )
+		index = 1
+		while index < 6
+			SetItemPosition(UnitItemInSlot(udg_Alliance_Maxlevel, GetInventoryIndexOfItemTypeBJ(udg_Alliance_Maxlevel, 'hslv')), GetUnitX(udg_Circles[1 + GetPlayerId(GetOwningPlayer(udg_Alliance_Maxlevel))]), GetUnitY(udg_Circles[1 + GetPlayerId(GetOwningPlayer(udg_Alliance_Maxlevel))]))
+			SetItemPosition(UnitItemInSlot(udg_Horde_Maxlevel, GetInventoryIndexOfItemTypeBJ(udg_Horde_Maxlevel, 'hslv')), GetUnitX(udg_Circles[1 + GetPlayerId(GetOwningPlayer(udg_Horde_Maxlevel))]), GetUnitY(udg_Circles[1 + GetPlayerId(GetOwningPlayer(udg_Horde_Maxlevel))]))
+			index = index + 1
+		TriggerSleepAction( 2.00 )
+		DisplayTextToPlayer(GetLocalPlayer(), 0, 0, "TRIGSTR_167")
+		TriggerSleepAction( 1.00 )
+		DisplayTextToPlayer(GetLocalPlayer(), 0, 0, "TRIGSTR_168")
+		TriggerSleepAction( 1.00 )
+		DisplayTextToPlayer(GetLocalPlayer(), 0, 0, "TRIGSTR_169")
+		TriggerSleepAction( 1.00 )
+		DisplayTextToPlayer(GetLocalPlayer(), 0, 0, "TRIGSTR_170")
+		TriggerSleepAction( 1.00 )
+		DisplayTextToPlayer(GetLocalPlayer(), 0, 0, "TRIGSTR_171")
+		TriggerSleepAction( 1.00 )
+		DisplayTextToPlayer(GetLocalPlayer(), 0, 0, "TRIGSTR_173")
+		TriggerSleepAction( 1.00 )
+		DisplayTextToPlayer(GetLocalPlayer(), 0, 0, "TRIGSTR_172")
+		PauseUnit(udg_Horde_Maxlevel, false)
+		PauseUnit(udg_Alliance_Maxlevel, false)
+		EnableTrigger( gg_trg_Bot_duel_AI )
+	
+	function trig_Duel_Init_Conditions() returns boolean
+		return udg_Duelenabled and not (udg_Aliance_is_defeated or udg_Horde_is_defeated or udg_DUEL)
+	
+	function trig_Duel_Init_Func023C() returns boolean
+		return GetInventoryIndexOfItemTypeBJ(udg_Horde_Maxlevel, 'hslv') > 0
+	
+	function trig_Duel_victory_Conditions() returns boolean
+		return udg_DUEL
+	
+	function moveDuelantsOut()
+		location l
+		if ( GetPlayerRace(GetOwningPlayer(GetEnumUnit())) == RACE_HUMAN )
+			l = Location(GetRectCenterX(gg_rct_Hero_respawn_A), GetRectCenterY(gg_rct_Hero_respawn_A))
+		else
+			l = Location(GetRectCenterX(gg_rct_Hero_respawn_H), GetRectCenterY(gg_rct_Hero_respawn_H))
+		SetUnitPositionLoc( GetEnumUnit(), l )
+		if (GetLocalPlayer() == GetOwningPlayer(GetEnumUnit()))
+			PanCameraToTimed(GetLocationX(l), GetLocationY(l), 0.7)
+		RemoveLocation(l)
+	
+	function trig_Duel_victory_Actions()
+		location l
+		group g
+		integer i
+		if (GetTriggerUnit() == udg_Alliance_Maxlevel)
+			PauseUnit(udg_Horde_Maxlevel, true)
+			SetUnitInvulnerable( udg_Horde_Maxlevel, true )
+			TriggerSleepAction( 1.00 )
+			StartSound(gg_snd_BUTCHER)
+			TriggerSleepAction( 2 )
+			DisplayTextToPlayer(GetLocalPlayer(), 0, 0, (GetPlayerName(GetOwningPlayer(udg_Horde_Maxlevel)) + " побеждает в дуэли и получает 1000 золота, остальные игроки Орды получают по 500 золота.") )
+			TriggerSleepAction( 1.00 )
+			SetPlayerState(GetOwningPlayer(udg_Horde_Maxlevel), PLAYER_STATE_GOLD_GATHERED, GetPlayerState(GetOwningPlayer(udg_Horde_Maxlevel), PLAYER_STATE_GOLD_GATHERED) + 500)
+			SetPlayerState(GetOwningPlayer(udg_Horde_Maxlevel), PLAYER_STATE_RESOURCE_GOLD, GetPlayerState(GetOwningPlayer(udg_Horde_Maxlevel), PLAYER_STATE_RESOURCE_GOLD) + 500)
+			AddSpecialEffectTarget("Abilities\\Spells\\Items\\ResourceItems\\ResourceEffectTarget.mdl", udg_Horde_Maxlevel, "origin")
+			i = 2
+			while (i < 6)
+				i++
+				SetPlayerState(Player(i), PLAYER_STATE_GOLD_GATHERED, GetPlayerState(Player(i), PLAYER_STATE_GOLD_GATHERED) + 500)
+				SetPlayerState(Player(i), PLAYER_STATE_RESOURCE_GOLD, GetPlayerState(Player(i), PLAYER_STATE_RESOURCE_GOLD) + 500)
+		else
+			PauseUnit(udg_Alliance_Maxlevel, true)
+			SetUnitInvulnerable( udg_Alliance_Maxlevel, true )
+			TriggerSleepAction( 1.00 )
+			StartSound(gg_snd_BUTCHER)
+			TriggerSleepAction( 2 )
+			DisplayTextToPlayer(GetLocalPlayer(), 0, 0, (GetPlayerName(GetOwningPlayer(udg_Alliance_Maxlevel)) + " побеждает в дуэли и получает 1000 золота, остальные игроки Орды получают по 500 золота.") )
+			TriggerSleepAction( 1.00 )
+			SetPlayerState(GetOwningPlayer(udg_Alliance_Maxlevel), PLAYER_STATE_GOLD_GATHERED, GetPlayerState(GetOwningPlayer(udg_Alliance_Maxlevel), PLAYER_STATE_GOLD_GATHERED) + 500)
+			SetPlayerState(GetOwningPlayer(udg_Alliance_Maxlevel), PLAYER_STATE_RESOURCE_GOLD, GetPlayerState(GetOwningPlayer(udg_Alliance_Maxlevel), PLAYER_STATE_RESOURCE_GOLD) + 500)
+			AddSpecialEffectTarget("Abilities\\Spells\\Items\\ResourceItems\\ResourceEffectTarget.mdl", udg_Alliance_Maxlevel, "origin")
+			i = 6
+			while (i < 10)
+				i++
+				SetPlayerState(Player(i), PLAYER_STATE_GOLD_GATHERED, GetPlayerState(Player(i), PLAYER_STATE_GOLD_GATHERED) + 500)
+				SetPlayerState(Player(i), PLAYER_STATE_RESOURCE_GOLD, GetPlayerState(Player(i), PLAYER_STATE_RESOURCE_GOLD) + 500)
+		TriggerSleepAction( 3.00 )
+		if ( udg_PvP_Test )
+			l = Location(GetRectCenterX(gg_rct_Hero_respawn_H), GetRectCenterY(gg_rct_Hero_respawn_H))
+			SetUnitPositionLoc( udg_Horde_Maxlevel, l )
+			RemoveLocation(l)
+			l = Location(GetRectCenterX(gg_rct_Hero_respawn_A), GetRectCenterY(gg_rct_Hero_respawn_A))
+			SetUnitPositionLoc( udg_Alliance_Maxlevel, l )
+			RemoveLocation(l)
+			SuspendHeroXP(udg_Horde_Maxlevel, false)
+			SuspendHeroXP(udg_Alliance_Maxlevel, false)
+			DisableTrigger( gg_trg_Bot_duel_AI )
+		StopSound(gg_snd_PH1, false, true)
+		if ( udg_PvP_Test )
+			TriggerExecute( trg_Duel_Init )
+		else
+			udg_DUEL = false
+			PauseAllUnitsBJ( false )
+			g = CreateGroup()
+			GroupEnumUnitsInRect(g, gg_rct_Duel_Zone, null)
+			ForGroup(g, function moveDuelantsOut)
+			TimerStart(udg_Duel_timer, 600, false, null)
+			TimerDialogDisplay(udg_Duel_timer_window, true)
+			SetUnitInvulnerable( udg_Horde_Maxlevel, false )
+	
+	//===========================================================================
+	init
+		integer i = 1
+		trg_Duel_Switcher = CreateTrigger(  )
+		while (i < 11)
+			i++
+			TriggerRegisterPlayerChatEvent( trg_Duel_Switcher, Player(i), "-duel", true )
+		TriggerAddAction( trg_Duel_Switcher, function trig_duel_Actions )
+		trg_PvP_test = CreateTrigger()
+		DisableTrigger( trg_PvP_test )
+		TriggerRegisterPlayerChatEvent( trg_PvP_test, Player(3), "-pvptest", true )
+		TriggerRegisterPlayerChatEvent( trg_PvP_test, Player(7), "-pvptest", true )
+		TriggerAddAction( trg_PvP_test, function trig_PvP_test_Actions )
+		trg_Duel_Force = CreateTrigger(  )
+		TriggerRegisterPlayerChatEvent( trg_Duel_Force, Player(3), "-duel init", true )
+		TriggerRegisterPlayerChatEvent( trg_Duel_Force, Player(7), "-duel init", true )
+		TriggerAddAction( trg_Duel_Force, function trig_Duel_Force_Actions )
+		trg_Duel_Init = CreateTrigger(  )
+		TriggerRegisterTimerExpireEventBJ( trg_Duel_Init, udg_Duel_timer )
+		TriggerAddCondition( trg_Duel_Init, Condition( function trig_Duel_Init_Conditions ) )
+		TriggerAddAction( trg_Duel_Init, function trig_Duel_Init_Actions )
+		trg_Duel_Victory = CreateTrigger(  )
+		TriggerRegisterAnyUnitEventBJ( trg_Duel_Victory, EVENT_PLAYER_UNIT_DEATH )
+		TriggerAddCondition( trg_Duel_Victory, Condition( function trig_Duel_victory_Conditions ) )
+		TriggerAddAction( trg_Duel_Victory, function trig_Duel_victory_Actions )
+endpackage

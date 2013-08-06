@@ -3,8 +3,41 @@ package Choosing
 	import MultiBoard
 	player udg_Owner
 	unit udg_Sold_unit
-	trigger gg_trg_HERO_CHOISE
+	trigger trg_HERO_CHOISE
+	trigger trg_Pass
 	integer udg_herolevel
+	
+	function trig_Pass_Actions()
+		unit u
+		unit newcircle
+		location l
+		integer i
+		if (GetSpellAbilityId() == 'A007')
+			u = GetTriggerUnit()
+			l = GetStartLocationLoc(GetPlayerStartLocation(GetOwningPlayer(u)))
+			switch (GetUnitTypeId(u))
+				case 'h001'
+					newcircle = CreateUnitAtLoc(GetOwningPlayer(u), 'n000', l, bj_UNIT_FACING)
+				case 'n000'
+					newcircle = CreateUnitAtLoc(GetOwningPlayer(u), 'n006', l, bj_UNIT_FACING)
+				case 'n006'
+					newcircle = CreateUnitAtLoc(GetOwningPlayer(u), 'h001', l, bj_UNIT_FACING)
+				case 'n001'
+					newcircle = CreateUnitAtLoc(GetOwningPlayer(u), 'n002', l, bj_UNIT_FACING)
+				case 'n002'
+					newcircle = CreateUnitAtLoc(GetOwningPlayer(u), 'n007', l, bj_UNIT_FACING)
+				default//case 'n007'
+					newcircle = CreateUnitAtLoc(GetOwningPlayer(u), 'n001', l, bj_UNIT_FACING)
+			RemoveLocation(l)
+			i = -1
+			while (i < 5)
+				i++
+				UnitAddItem( newcircle, UnitItemInSlot(u, i) )
+			if (GetLocalPlayer() == GetOwningPlayer(u))
+				ClearSelection()
+				SelectUnit(newcircle, true)
+			RemoveUnit( u )
+			udg_Circles[1 + GetPlayerId(GetTriggerPlayer())] = newcircle
 	
 	function trig_HERO_CHOISE_Conditions() returns boolean
 		return GetUnitTypeId(GetTriggerUnit()) == 'h001' or GetUnitTypeId(GetTriggerUnit()) == 'n002' or GetUnitTypeId(GetTriggerUnit()) == 'n000' or GetUnitTypeId(GetTriggerUnit()) == 'n007' or GetUnitTypeId(GetTriggerUnit()) == 'n006' or GetUnitTypeId(GetTriggerUnit()) == 'n001' or GetUnitTypeId(GetTriggerUnit()) == 'n009'
@@ -50,10 +83,8 @@ package Choosing
 			SetHeroXP( udg_Sold_unit, ( udg_herolevel div 2 ), true )
 			RemoveUnit( udg_Curent_Player_Hero[1 + GetPlayerId(udg_Owner)] )
 		// ----------------------
-		if ( GetPlayerRace(udg_Owner) == RACE_HUMAN )
-			ConditionalTriggerExecute( gg_trg_herochekingA )
-		else
-			ConditionalTriggerExecute( gg_trg_herochekingH )
+		//if (TriggerEvaluate(trg_HERO_CHOISE))	//Хз, зачем сторубу этот кусок. Пусть пока будет так.
+		//	TriggerExecute(trg_HERO_CHOISE)		//P.S.: Если не выбрать гера/баги с этим делом - раскоментируй.
 		// ----------------------
 		if ( udg_Curent_Player_Hero[1 + GetPlayerId(udg_Owner)] != null )
 			DisplayTextToPlayer( GetLocalPlayer(), 0, 0, ( ( GetPlayerName(udg_Owner) + " : " ) + ( GetUnitName(udg_Curent_Player_Hero[1 + GetPlayerId(udg_Owner)]) + ( "  ==>  " + GetUnitName(udg_Sold_unit) ) ) ) )
@@ -74,7 +105,6 @@ package Choosing
 			udg_Oderg = udg_Sold_unit
 		if ( GetUnitTypeId(udg_Sold_unit) == 'H006' )
 			udg_Ecsgumation_owner = udg_Sold_unit
-			BJDebugMsg(GetObjectName(GetUnitTypeId(udg_Sold_unit))) //тестовая йопта печать
 		SetPlayerTechMaxAllowed(udg_Owner, 'R000', 0)
 		SetPlayerTechMaxAllowed(udg_Owner, 'R001', 0)
 		SetPlayerTechMaxAllowed(udg_Owner, 'R002', 0)
@@ -82,8 +112,11 @@ package Choosing
 	
 	//===========================================================================
 	init
-		gg_trg_HERO_CHOISE = CreateTrigger(  )
-		TriggerRegisterAnyUnitEventBJ( gg_trg_HERO_CHOISE, EVENT_PLAYER_UNIT_SELL )
-		TriggerAddCondition( gg_trg_HERO_CHOISE, Condition( function trig_HERO_CHOISE_Conditions ) )
-		TriggerAddAction( gg_trg_HERO_CHOISE, function trig_HERO_CHOISE_Actions )
+		trg_Pass = CreateTrigger(  )
+		TriggerRegisterAnyUnitEventBJ( trg_Pass, EVENT_PLAYER_UNIT_SPELL_CAST )
+		TriggerAddAction( trg_Pass, function trig_Pass_Actions )
+		trg_HERO_CHOISE = CreateTrigger(  )
+		TriggerRegisterAnyUnitEventBJ( trg_HERO_CHOISE, EVENT_PLAYER_UNIT_SELL )
+		TriggerAddCondition( trg_HERO_CHOISE, Condition( function trig_HERO_CHOISE_Conditions ) )
+		TriggerAddAction( trg_HERO_CHOISE, function trig_HERO_CHOISE_Actions )
 endpackage

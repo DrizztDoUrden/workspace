@@ -4,13 +4,12 @@ package Ecsgumation
 	
 	function trig_Ecsgumation_Actions()
 		effect ef
-		BJDebugMsg("Test")
 		location l
 		unit tempscel
 		if ( GetUnitState(udg_Ecsgumation_owner, UNIT_STATE_LIFE) > 0 and not IsUnitPaused(udg_Ecsgumation_owner) )
 			l = GetUnitLoc(udg_Ecsgumation_owner)
 			tempscel = CreateUnitAtLoc(GetOwningPlayer(udg_Ecsgumation_owner), 'n00I', l, bj_UNIT_FACING)
-			GroupAddUnit( udg_Skeleton_group, tempscel )
+			//GroupAddUnit( udg_Skeleton_group, tempscel )
 			UnitApplyTimedLife( tempscel, 'BTLF', GetHeroInt(udg_Ecsgumation_owner, true) / 2 )
 			ef = AddSpecialEffectTarget( "Abilities\\Spells\\Undead\\Darksummoning\\DarkSummonTarget.mdl", tempscel, "origin" )
 			TriggerSleepAction( 3.0 )
