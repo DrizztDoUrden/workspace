@@ -1,4 +1,6 @@
 package Bonus
+	import UnitClass
+	
 	public class Bonus
 		private unit target
 		private integer maxMana
@@ -9,7 +11,7 @@ package Bonus
 		
 		function setMaxMana(integer value)
 			integer i = 16384
-			integer j = 15
+			integer j = 30
 			integer temp = value - maxMana
 			maxMana = value
 			while (temp > 0)
@@ -17,18 +19,18 @@ package Bonus
 					UnitAddAbility(target, mpAbi)
 					SetUnitAbilityLevel(target, mpAbi, j)
 					UnitRemoveAbility(target, mpAbi)
-					temp -= temp
+					temp -= i
 				else
 					j--
 					i = i div 2
 			i = -16384
-			j = 30
+			j = 15
 			while (temp < 0)
 				if (temp <= i)
 					UnitAddAbility(target, mpAbi)
 					SetUnitAbilityLevel(target, mpAbi, j)
 					UnitRemoveAbility(target, mpAbi)
-					temp += temp
+					temp -= i
 				else
 					j--
 					i = i div 2

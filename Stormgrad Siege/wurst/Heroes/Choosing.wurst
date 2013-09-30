@@ -1,7 +1,10 @@
-package Choosing
+	package Choosing
 	import SSGlobals
-	import MultiBoard
+	import SSMultiBoard
 	import Inquisitor
+	import DFDebugger
+	import UnitClass
+	DebugStream debugstream
 	player udg_Owner
 	unit udg_Sold_unit
 	trigger trg_HERO_CHOISE
@@ -38,14 +41,14 @@ package Choosing
 				ClearSelection()
 				SelectUnit(newcircle, true)
 			RemoveUnit( u )
-			udg_Circles[1 + GetPlayerId(GetTriggerPlayer())] = newcircle
+			circles[1 + GetPlayerId(GetTriggerPlayer())] = newcircle
 	
 	function trig_HERO_CHOISE_Conditions() returns boolean
 		return GetUnitTypeId(GetTriggerUnit()) == 'h001' or GetUnitTypeId(GetTriggerUnit()) == 'n002' or GetUnitTypeId(GetTriggerUnit()) == 'n000' or GetUnitTypeId(GetTriggerUnit()) == 'n007' or GetUnitTypeId(GetTriggerUnit()) == 'n006' or GetUnitTypeId(GetTriggerUnit()) == 'n001' or GetUnitTypeId(GetTriggerUnit()) == 'n009'
 	
 	function trig_HERO_CHOISE_enuming1()
 		SetPlayerTechMaxAllowed(GetEnumPlayer(), GetUnitTypeId(udg_Sold_unit), 0)
-		SetPlayerTechMaxAllowed(GetEnumPlayer(), GetUnitTypeId(udg_Curent_Player_Hero[1 + GetPlayerId(udg_Owner)]), -1)
+		SetPlayerTechMaxAllowed(GetEnumPlayer(), GetUnitTypeId(curent_Player_Hero[1 + GetPlayerId(udg_Owner)]), -1)
 	
 	function trig_HERO_CHOISE_enuming2()
 		SetPlayerTechMaxAllowed(GetEnumPlayer(), GetUnitTypeId(udg_Sold_unit), 0)
@@ -55,71 +58,74 @@ package Choosing
 		udg_Sold_unit = GetSoldUnit()
 		// ----------------------
 		if ( GetPlayerRace(udg_Owner) == RACE_HUMAN )
-			if ( not udg_alreadypickedA )
-				udg_alreadypickedA = true
-				udg_Alliance_Maxlevel = udg_Sold_unit
-				onLvlMaxing(udg_Alliance_Maxlevel)
+			if ( not alreadypickedA )
+				alreadypickedA = true
+				alliance_Maxlevel = udg_Sold_unit
+				onLvlMaxing(alliance_Maxlevel)
 				ConditionalTriggerExecute( gg_trg_First_Aliance_quest_begin )
-				udg_QA = true
+				questA = true
 		else
-			if ( not udg_alreadypickedH )
-				udg_alreadypickedH = true
-				udg_Horde_Maxlevel = udg_Sold_unit
-				onLvlMaxing(udg_Horde_Maxlevel)
+			if ( not alreadypickedH )
+				alreadypickedH = true
+				horde_Maxlevel = udg_Sold_unit
+				onLvlMaxing(horde_Maxlevel)
 				ConditionalTriggerExecute( gg_trg_First_Horde_quest_begin )
-				udg_QH = true
+				questH = true
 		// ----------------------
-		if ( not udg_Player_already_has_hero[1 + GetPlayerId(udg_Owner)] )
-			udg_Player_already_has_hero[1 + GetPlayerId(udg_Owner)] = true
+		if ( not player_already_has_hero[1 + GetPlayerId(udg_Owner)] )
+			player_already_has_hero[1 + GetPlayerId(udg_Owner)] = true
 			ForForce( GetPlayersByMapControl(MAP_CONTROL_USER), function trig_HERO_CHOISE_enuming2 )
 		else
 			ForForce( GetPlayersByMapControl(MAP_CONTROL_USER), function trig_HERO_CHOISE_enuming1 )
-			UnitAddItem( udg_Sold_unit, UnitItemInSlot(udg_Curent_Player_Hero[1 + GetPlayerId(udg_Owner)], 0) )
-			UnitAddItem( udg_Sold_unit, UnitItemInSlot(udg_Curent_Player_Hero[1 + GetPlayerId(udg_Owner)], 1) )
-			UnitAddItem( udg_Sold_unit, UnitItemInSlot(udg_Curent_Player_Hero[1 + GetPlayerId(udg_Owner)], 2) )
-			UnitAddItem( udg_Sold_unit, UnitItemInSlot(udg_Curent_Player_Hero[1 + GetPlayerId(udg_Owner)], 3) )
-			UnitAddItem( udg_Sold_unit, UnitItemInSlot(udg_Curent_Player_Hero[1 + GetPlayerId(udg_Owner)], 4) )
-			UnitAddItem( udg_Sold_unit, UnitItemInSlot(udg_Curent_Player_Hero[1 + GetPlayerId(udg_Owner)], 5) )
-			udg_herolevel = GetHeroXP(udg_Curent_Player_Hero[1 + GetPlayerId(udg_Owner)])
+			UnitAddItem( udg_Sold_unit, UnitItemInSlot(curent_Player_Hero[1 + GetPlayerId(udg_Owner)], 0) )
+			UnitAddItem( udg_Sold_unit, UnitItemInSlot(curent_Player_Hero[1 + GetPlayerId(udg_Owner)], 1) )
+			UnitAddItem( udg_Sold_unit, UnitItemInSlot(curent_Player_Hero[1 + GetPlayerId(udg_Owner)], 2) )
+			UnitAddItem( udg_Sold_unit, UnitItemInSlot(curent_Player_Hero[1 + GetPlayerId(udg_Owner)], 3) )
+			UnitAddItem( udg_Sold_unit, UnitItemInSlot(curent_Player_Hero[1 + GetPlayerId(udg_Owner)], 4) )
+			UnitAddItem( udg_Sold_unit, UnitItemInSlot(curent_Player_Hero[1 + GetPlayerId(udg_Owner)], 5) )
+			udg_herolevel = GetHeroXP(curent_Player_Hero[1 + GetPlayerId(udg_Owner)])
 			SetHeroXP( udg_Sold_unit, ( udg_herolevel div 2 ), true )
-			RemoveUnit( udg_Curent_Player_Hero[1 + GetPlayerId(udg_Owner)] )
+			RemoveUnit( curent_Player_Hero[1 + GetPlayerId(udg_Owner)] )
 		// ----------------------
 		//if (TriggerEvaluate(trg_HERO_CHOISE))	//Хз, зачем сторубу этот кусок. Пусть пока будет так.
 		//	TriggerExecute(trg_HERO_CHOISE)		//P.S.: Если не выбрать гера/баги с этим делом - раскоментируй.
 		// ----------------------
-		if ( udg_Curent_Player_Hero[1 + GetPlayerId(udg_Owner)] != null )
-			DisplayTextToPlayer( GetLocalPlayer(), 0, 0, ( ( GetPlayerName(udg_Owner) + " : " ) + ( GetUnitName(udg_Curent_Player_Hero[1 + GetPlayerId(udg_Owner)]) + ( "  ==>  " + GetUnitName(udg_Sold_unit) ) ) ) )
+		if ( curent_Player_Hero[1 + GetPlayerId(udg_Owner)] != null )
+			DisplayTextToPlayer( GetLocalPlayer(), 0, 0, ( ( GetPlayerName(udg_Owner) + " : " ) + ( GetUnitName(curent_Player_Hero[1 + GetPlayerId(udg_Owner)]) + ( "  ==>  " + GetUnitName(udg_Sold_unit) ) ) ) )
 		else
 			DisplayTextToPlayer( GetLocalPlayer(), 0, 0, ( ( GetPlayerName(udg_Owner) + " : " ) + GetUnitName(udg_Sold_unit) ) )
 		// ----------------------
 		UnitAddAbility( udg_Sold_unit, 'A03T' )
 		UnitAddAbility( udg_Sold_unit, 'A03S' )
-		udg_Curent_Player_Hero[1 + GetPlayerId(udg_Owner)] = udg_Sold_unit
+		curent_Player_Hero[1 + GetPlayerId(udg_Owner)] = udg_Sold_unit
 		SelectUnitForPlayerSingle( udg_Sold_unit, udg_Owner )
 		SetPlayerAlliance(udg_Owner, Player(2), ALLIANCE_SHARED_VISION, true)
 		SetPlayerAlliance(udg_Owner, Player(11), ALLIANCE_SHARED_VISION, true)
 		if ( GetUnitTypeId(udg_Sold_unit) == 'U003' )
-			udg_DK = udg_Sold_unit
-		else if ( GetUnitTypeId(udg_Sold_unit) == 'H007' )
-			udg_Sniper = udg_Sold_unit
-		else if ( GetUnitTypeId(udg_Sold_unit) == 'O000' )
-			udg_Oderg = udg_Sold_unit
-		else if ( GetUnitTypeId(udg_Sold_unit) == 'H006' )
-			udg_Ecsgumation_owner = udg_Sold_unit
-		else if ( GetUnitTypeId(udg_Sold_unit) == 'H00O' )
+			dk = udg_Sold_unit
+		if ( GetUnitTypeId(udg_Sold_unit) == 'H007' )
+			sniper = udg_Sold_unit
+		if ( GetUnitTypeId(udg_Sold_unit) == 'O000' )
+			oderg = udg_Sold_unit
+		if ( GetUnitTypeId(udg_Sold_unit) == 'H006' )
+			ecsgumation_owner = udg_Sold_unit
+		if ( GetUnitTypeId(udg_Sold_unit) == 'H00O' )
 			initializeInquisitor(udg_Sold_unit)
 		SetPlayerTechMaxAllowed(udg_Owner, 'R000', 0)
 		SetPlayerTechMaxAllowed(udg_Owner, 'R001', 0)
 		SetPlayerTechMaxAllowed(udg_Owner, 'R002', 0)
 		onPick(udg_Sold_unit)
+		new Unit(udg_Sold_unit)
 	
 	//===========================================================================
 	init
+		debugstream = new DebugStream("SS AoS - main debug")
+		debugstream.writeln("choosing init")
 		trg_Pass = CreateTrigger(  )
-		TriggerRegisterAnyUnitEventBJ( trg_Pass, EVENT_PLAYER_UNIT_SPELL_CAST )
-		TriggerAddAction( trg_Pass, function trig_Pass_Actions )
 		trg_HERO_CHOISE = CreateTrigger(  )
+		TriggerRegisterAnyUnitEventBJ( trg_Pass, EVENT_PLAYER_UNIT_SPELL_CAST )
 		TriggerRegisterAnyUnitEventBJ( trg_HERO_CHOISE, EVENT_PLAYER_UNIT_SELL )
-		TriggerAddCondition( trg_HERO_CHOISE, Condition( function trig_HERO_CHOISE_Conditions ) )
+		TriggerAddAction( trg_Pass, function trig_Pass_Actions )
 		TriggerAddAction( trg_HERO_CHOISE, function trig_HERO_CHOISE_Actions )
+		TriggerAddCondition( trg_HERO_CHOISE, Condition( function trig_HERO_CHOISE_Conditions ) )
 endpackage

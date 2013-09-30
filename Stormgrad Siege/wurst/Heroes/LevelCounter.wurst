@@ -1,21 +1,25 @@
 package LevelCounter
 	import SSGlobals
-	import MultiBoard
+	import DFDebugger
+	import SSMultiBoard
+	DebugStream debugstream
 	
 	trigger gg_trg_Hero_level_count
 	
 	function trig_Hero_level_count_Actions()
 		unit u = GetTriggerUnit()
 		if (GetPlayerController(GetOwningPlayer(u)) == MAP_CONTROL_USER)
-			if (GetHeroLevel(u) > GetHeroLevel(udg_Alliance_Maxlevel) or GetHeroLevel(u) > GetHeroLevel(udg_Horde_Maxlevel))
+			if (GetHeroLevel(u) > GetHeroLevel(alliance_Maxlevel) or GetHeroLevel(u) > GetHeroLevel(horde_Maxlevel))
 				if (GetPlayerRace(GetOwningPlayer(u)) == RACE_HUMAN)
-					udg_Alliance_Maxlevel = u
+					alliance_Maxlevel = u
 				else
-					udg_Horde_Maxlevel = u
+					horde_Maxlevel = u
 				onLvlMaxing(u)
 	
 	//===========================================================================
 	init
+		debugstream = new DebugStream("SS AoS - main debug")
+		debugstream.writeln("level counter init")
 		gg_trg_Hero_level_count = CreateTrigger(  )
 		TriggerRegisterAnyUnitEventBJ( gg_trg_Hero_level_count, EVENT_PLAYER_HERO_LEVEL )
 		TriggerAddAction( gg_trg_Hero_level_count, function trig_Hero_level_count_Actions )

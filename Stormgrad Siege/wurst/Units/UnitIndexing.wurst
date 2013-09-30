@@ -1,0 +1,13 @@
+package UnitIndexing
+	import UnitClass
+	import NeutralCreep
+	
+	public function indexUnits()
+		group g = CreateGroup()
+		GroupEnumUnitsInRect(g, bj_mapInitialPlayableArea, null)
+		for unit u in g
+			if (GetOwningPlayer(u) == Player(PLAYER_NEUTRAL_AGGRESSIVE))
+				new NeutralCreep(u, GetUnitX(u), GetUnitY(u), isUnitQuested(u))
+			else
+				new Unit(u)
+endpackage

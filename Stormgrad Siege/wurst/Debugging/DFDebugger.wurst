@@ -1,0 +1,60 @@
+package DFDebugger
+import DebugFile
+import LinkedList
+
+public class DebugStream
+	private DebugFile file
+	private static LinkedList<DebugFile> files
+	boolean toFile
+	boolean toScreen
+	string buffer
+	static boolean stdOutToFile = false
+	static boolean stdOutToScreen = false
+	static boolean forceEveryStream = false
+	static boolean forceToFile = true
+	static boolean forceToScreen = false
+	
+	construct(string name)
+		boolean search
+		if name != ""
+			search = true
+			for DebugFile df in files
+				if df.filename == name and search
+					search = false
+					file = df
+			if search
+				file = new DebugFile(name)
+				files.add(file)
+			toFile = stdOutToFile
+		else
+			file = null
+			toFile = false
+		toScreen = stdOutToScreen
+		buffer = ""
+	
+	private function fileCondition() returns boolean
+		return (toFile or forceEveryStream and forceToFile) and file != null
+	
+	private function screenCondition() returns boolean
+		return toScreen or forceEveryStream and forceToScreen
+	
+	function write(string text)
+		if fileCondition()
+			file.write(text)
+			file.save()
+		if screenCondition()
+		buffer = buffer + text
+	
+	function writeln(string text)
+		if fileCondition()
+			file.writeln(text)
+			file.save()
+		if screenCondition()
+			DisplayTimedTextToPlayer(GetLocalPlayer(), 0, 0, 60, buffer+text)
+			buffer = ""
+	
+	static function initialize()
+		files = new LinkedList<DebugFile>
+
+init
+	DebugStream.initialize()

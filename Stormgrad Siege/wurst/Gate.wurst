@@ -1,0 +1,20 @@
+package Gate
+	import DFDebugger
+	import SSGlobals
+	DebugStream debugstream
+	trigger trg_Gate_death
+	function trig_Gate_death_Actions()
+		location l = Location(GetRectCenterX(gg_rct_Creep_move_left_1), GetRectCenterY(gg_rct_Creep_move_left_1))
+		KillDestructable(gg_dest_LTg1_0986)
+		udg_Gate_is_destroyed = true
+		TriggerSleepAction( 25.00 )
+		KillDestructable( gg_dest_OTsp_1611 )
+
+//===========================================================================
+	init
+		debugstream = new DebugStream("SS AoS - main debug")
+		debugstream.writeln("gate init")
+		trg_Gate_death = CreateTrigger(  )
+		TriggerRegisterDeathEvent( trg_Gate_death, gg_dest_DTg6_0011 )
+		TriggerAddAction( trg_Gate_death, function trig_Gate_death_Actions )
+endpackage

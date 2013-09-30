@@ -1,5 +1,7 @@
 package IceBlock
+	import DFDebugger
 	import SSGlobals
+	DebugStream debugstream
 	trigger trg_Ice_Block
 	
 	function trig_Ice_Block_Actions()
@@ -9,12 +11,14 @@ package IceBlock
 			PauseUnit( u, true )
 			SetUnitTimeScale(u, 0)
 			TriggerSleepAction( 10.00 )
-			if (not udg_DUEL)
+			if (u == alliance_Maxlevel or u == horde_Maxlevel or not duel)
 				PauseUnit( u, false )
 			SetUnitTimeScale(u, 1)
 			UnitRemoveAbility(u, 'B005')
 
 	init
+		debugstream = new DebugStream("SS AoS - main debug")
+		debugstream.writeln("ice block init")
 		trg_Ice_Block = CreateTrigger(  )
 		TriggerRegisterAnyUnitEventBJ( trg_Ice_Block, EVENT_PLAYER_UNIT_SPELL_EFFECT )
 		TriggerAddAction( trg_Ice_Block, function trig_Ice_Block_Actions )

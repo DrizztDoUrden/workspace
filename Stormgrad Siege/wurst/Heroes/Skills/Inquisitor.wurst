@@ -1,17 +1,20 @@
 package Inquisitor
 	import Bonus
 	import LinkedList
+	import UnitClass
+	import DFDebugger
+	import SSGlobals
 	Bonus thisBonus
+	DebugStream inqDS
 	trigger trg_rage
 	trigger trg_oblivion
 	trigger trg_call
 	trigger trg_Revelation
 	trigger trg_fires
-	integer strPlus
-	integer intMinus
+	integer strPlus = 0
+	integer intBorrow = 0
 	unit inquisitor = null
 	boolean initialized = false
-	real firesTickStacks
 	constant integer abilityRage = 'A046'
 	constant integer abilityOblivion = 'A047'
 	constant integer abilityCall = 'A000'
@@ -21,37 +24,46 @@ package Inquisitor
 	class Madness
 		private integer life
 		private integer ammount
-		private unit owner
+		private Unit owner
 		private static trigger trg_Destructor
 		private static trigger trg_Madness
 		private static LinkedList<Madness> stacks
 		
 		private static function trg_Madness_Actions()
 			new Madness(GetAttacker(), 1)
+			SetUnitState(inquisitor, UNIT_STATE_MANA, GetUnitState(inquisitor, UNIT_STATE_MANA) + GetUnitAbilityLevel(inquisitor, abilityRevelation) * 0.1 * Madness.getStacks(inquisitor))
 		
 		private static function trg_Destructor_Actions()
 			integer i
 			integer newint
-			let iterator = stacks.iterator()
-			while iterator.hasNext()
-				Madness m = iterator.next()
+			integer temp
+			for Madness m in stacks
 				m.life--
 				if (m.life <= 0)
-					iterator.remove()
-			iterator.close()
+					stacks.remove(m)
+					destroy m
+			
+			//str and int recounting
 			i = Madness.getStacks(inquisitor) div 2
 			SetHeroStr(inquisitor, GetHeroStr(inquisitor, false) + i - strPlus, true)
-			newint = GetHeroInt(inquisitor, false) - i + intMinus
+			newint = GetHeroInt(inquisitor, false) - i + strPlus
 			if (newint < 5)
+				intBorrow = intBorrow + 5 - newint
 				newint = 5
+			else
+				if intBorrow > newint - 5
+					intBorrow -= newint - 5
+					newint = 5
+				else
+					newint = newint - intBorrow
+					intBorrow = 0
 			SetHeroInt(inquisitor, newint, true)
 			strPlus = i
-			intMinus = i
 		
 		static function getStacks(unit target) returns integer
 			integer i = 0
 			for Madness m in stacks
-				if (m.owner == target)
+				if (m.owner == target.getId())
 					i += m.ammount
 			return i
 		
@@ -60,32 +72,38 @@ package Inquisitor
 			let iterator = stacks.iterator()
 			while (iterator.hasNext() and i > 0)
 				Madness m = iterator.next()
-				if (m.owner == target)
-					iterator.remove()
-					i--
+				if (m.owner == target.getId())
+					m.ammount -= i
+					if (m.ammount <= 0)
+						i=-m.ammount
+						destroy m
+						iterator.remove()
 			iterator.close()
 		
 		static function nullifyStacks(unit target)
-			let iterator = stacks.iterator()
-			while iterator.hasNext()
-				Madness m = iterator.next()
-				if (m.owner == target)
-					iterator.remove()
-			iterator.close()
+			for Madness m in stacks
+				if (m.owner == target.getId())
+					stacks.remove(m)
+					destroy m
 		
 		construct(unit target, int number)
-			life = 60
+			life = 30
 			stacks.add(this)
-			owner = target
+			owner = target.getId()
 			ammount = number
 			
 		static function initialization()
 			trg_Madness = CreateTrigger()
 			trg_Destructor = CreateTrigger()
+			stacks = new LinkedList<Madness>
 			TriggerAddAction(trg_Madness, function trg_Madness_Actions)
 			TriggerAddAction(trg_Destructor, function trg_Destructor_Actions)
 			TriggerRegisterUnitEvent(trg_Madness, inquisitor, EVENT_UNIT_ATTACKED)
 			TriggerRegisterTimerEvent(trg_Destructor, 1, true)
+		
+		static function uninitialize()
+			DestroyTrigger(trg_Madness)
+			DestroyTrigger(trg_Destructor)
 	
 	function rage_Conditions() returns boolean
 		return GetSpellAbilityId() == abilityRage
@@ -93,9 +111,9 @@ package Inquisitor
 	function rage_Actions()
 		unit u = GetSpellTargetUnit()
 		if (u == inquisitor)
-			SetUnitState(u, UNIT_STATE_LIFE, GetUnitState(u, UNIT_STATE_LIFE) + Madness.getStacks(u) * 3 * GetUnitAbilityLevel(u, abilityRage))
+			SetUnitState(u, UNIT_STATE_LIFE, GetUnitState(u, UNIT_STATE_LIFE) + Madness.getStacks(u) * 3 * GetUnitAbilityLevel(inquisitor, abilityRage))
 		else
-			SetUnitState(u, UNIT_STATE_LIFE, GetUnitState(u, UNIT_STATE_LIFE) - Madness.getStacks(u) * 5 * GetUnitAbilityLevel(u, abilityRage))
+			SetUnitState(u, UNIT_STATE_LIFE, GetUnitState(u, UNIT_STATE_LIFE) - Madness.getStacks(u) * 5 * GetUnitAbilityLevel(inquisitor, abilityRage))
 		Madness.nullifyStacks(u)
 	
 	function oblivion_Conditions() returns boolean
@@ -103,7 +121,7 @@ package Inquisitor
 	
 	function oblivion_Actions()
 		unit u = GetSpellTargetUnit()
-		SetUnitState(u, UNIT_STATE_LIFE, GetUnitState(u, UNIT_STATE_LIFE) - Madness.getStacks(u) * 2 * GetUnitAbilityLevel(u, abilityOblivion))
+		SetUnitState(u, UNIT_STATE_LIFE, GetUnitState(u, UNIT_STATE_LIFE) - Madness.getStacks(u) * 2 * GetUnitAbilityLevel(inquisitor, abilityOblivion))
 		//invisibility should be here?
 		new Madness(inquisitor, Madness.getStacks(u))
 		Madness.nullifyStacks(u)
@@ -112,51 +130,78 @@ package Inquisitor
 		return GetSpellAbilityId() == abilityFires
 	
 	function fires_Filter() returns boolean
-		return IsPlayerAlly(GetOwningPlayer(inquisitor), GetOwningPlayer(GetFilterUnit()))
+		return IsPlayerEnemy(GetOwningPlayer(inquisitor), GetOwningPlayer(GetFilterUnit()))
 	
 	function fires_Actions()
-		group g = CreateGroup()
+		group g
 		integer i = 0
+		integer tmpstacks
+		integer firesLevel = GetUnitAbilityLevel(inquisitor, abilityFires)
 		location l = GetSpellTargetLoc()
+		boolexpr filter = Condition(function fires_Filter)
+		real firesTickStacks = 0
 		while i < 10
-			g = GetUnitsInRangeOfLocMatching(300, l, Condition(function fires_Filter))
+			g = CreateGroup()
+			GroupEnumUnitsInRangeOfLoc(g, l, 300, filter)
 			for unit u in g
-				SetUnitState(u, UNIT_STATE_LIFE, GetUnitState(u, UNIT_STATE_LIFE) - (Madness.getStacks(u) + 5) * 1 * GetUnitAbilityLevel(u, abilityFires))
-				firesTickStacks += Madness.getStacks(u) * 0.06 * (1.25 - 0.25 * GetUnitAbilityLevel(u, abilityFires))
-				Madness.removeStacks(u, R2I(Madness.getStacks(u) * 0.2 * (1.25 - 0.25 * GetUnitAbilityLevel(u, abilityFires))))
-			g.clear()
+				tmpstacks = Madness.getStacks(u)
+				SetUnitState(u, UNIT_STATE_LIFE, GetUnitState(u, UNIT_STATE_LIFE) - (tmpstacks + 5) * firesLevel)
+				firesTickStacks += firesLevel + tmpstacks * 0.06 * firesLevel
+				Madness.removeStacks(u, R2I(tmpstacks * (0.225 - 0.025 * firesLevel)))
 			i++
-		DestroyGroup(g)
+			TriggerSleepAction(1)
+			new Madness(inquisitor, R2I(firesTickStacks))
+			firesTickStacks = firesTickStacks - R2I(firesTickStacks)
+			DestroyGroup(g)
+		DestroyBoolExpr(filter)
 	
 	function revelation_Actions()
 		if (GetUnitAbilityLevel(inquisitor, abilityRevelation) > 0)
-			thisBonus.setMaxMana(GetHeroStr(inquisitor, true) * 2 + Madness.getStacks(inquisitor) * 3)
+			thisBonus.setMaxMana(((GetHeroStr(inquisitor, true) * 2 + Madness.getStacks(inquisitor) * 3)) div 5)
 	
 	public function initializeInquisitor(unit hero)
-		if (not initialized)
-			initialized = true
-			inquisitor = hero
-			thisBonus = new Bonus(inquisitor, 0)
-			Madness.initialization()
-			trg_rage = CreateTrigger()
-			trg_oblivion = CreateTrigger()
-			//trg_call = CreateTrigger()
-			trg_Revelation = CreateTrigger()
-			trg_fires = CreateTrigger()
-			TriggerAddAction(trg_rage, function rage_Actions)
-			TriggerAddAction(trg_oblivion, function oblivion_Actions)
-			TriggerAddAction(trg_Revelation, function revelation_Actions)
-			TriggerAddAction(trg_fires, function fires_Actions)
-			TriggerRegisterTimerEvent(trg_Revelation, 0.5, true)
-			TriggerRegisterUnitEvent(trg_rage, inquisitor, EVENT_UNIT_SPELL_EFFECT)
-			TriggerRegisterUnitEvent(trg_oblivion, inquisitor, EVENT_UNIT_SPELL_EFFECT)
-			TriggerRegisterUnitEvent(trg_fires, inquisitor, EVENT_UNIT_SPELL_EFFECT)
-			TriggerAddCondition(trg_rage, Condition(function rage_Conditions))
-			TriggerAddCondition(trg_oblivion, Condition(function oblivion_Conditions))
-			TriggerAddCondition(trg_fires, Condition(function fires_Conditions))
+		if initialized
+			uninitialize()
 		else
-			inquisitor = hero
+			inqDS = new DebugStream("SS AoS - inquisitor debug")
+			inqDS.toFile = false
+			inqDS.toScreen = false
+			inqDS.writeln("New inquisitor is " + hero.getOwner().getName())
+		initialized = true
+		inquisitor = hero
+		thisBonus = new Bonus(inquisitor, 0)
+		Madness.initialization()
+		trg_rage = CreateTrigger()
+		trg_oblivion = CreateTrigger()
+		//trg_call = CreateTrigger()
+		trg_Revelation = CreateTrigger()
+		trg_fires = CreateTrigger()
+		TriggerAddAction(trg_rage, function rage_Actions)
+		TriggerAddAction(trg_oblivion, function oblivion_Actions)
+		TriggerAddAction(trg_Revelation, function revelation_Actions)
+		TriggerAddAction(trg_fires, function fires_Actions)
+		TriggerRegisterTimerEvent(trg_Revelation, 0.5, true)
+		TriggerRegisterUnitEvent(trg_rage, inquisitor, EVENT_UNIT_SPELL_EFFECT)
+		TriggerRegisterUnitEvent(trg_oblivion, inquisitor, EVENT_UNIT_SPELL_EFFECT)
+		TriggerRegisterUnitEvent(trg_fires, inquisitor, EVENT_UNIT_SPELL_EFFECT)
+		TriggerAddCondition(trg_rage, Condition(function rage_Conditions))
+		TriggerAddCondition(trg_oblivion, Condition(function oblivion_Conditions))
+		TriggerAddCondition(trg_fires, Condition(function fires_Conditions))
+	
+	public function uninitialize()
+		if initialized
+			initialized = false
+			Madness.uninitialize()
 			destroy thisBonus
-			thisBonus = new Bonus(inquisitor, 0)
-			
+			DestroyTrigger(trg_rage)
+			DestroyTrigger(trg_oblivion)
+			//DestroyTrigger(trg_call)
+			DestroyTrigger(trg_Revelation)
+			DestroyTrigger(trg_fires)
+			trg_rage = null
+			trg_oblivion = null
+			trg_call = null
+			trg_Revelation = null
+			trg_fires = null
+			inquisitor = null
 endpackage

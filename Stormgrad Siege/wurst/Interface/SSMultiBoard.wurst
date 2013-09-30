@@ -1,0 +1,200 @@
+package SSMultiBoard
+	import DFDebugger
+	import SSGlobals
+	DebugStream debugstream
+	multiboard board
+	trigger heroLvlUp
+	trigger heroKill
+	trigger initializer
+	integer array levels
+	integer array kills
+	integer array deaths
+	integer array series
+	
+	function getRowForPlayerId(integer id) returns integer
+		integer i = id
+		if (i < 7)
+			i = i - 1
+		return i
+	
+	function getRowForPlayer(player p) returns integer
+		return getRowForPlayerId(GetPlayerId(p))
+    
+	public function onPick(unit hero)
+		integer i = getRowForPlayer(GetOwningPlayer(hero))
+		if (i > 1)
+			board.getItem(i, 2).setValue(GetUnitName(hero))
+	
+	public function onLvlMaxing(unit hero)
+		integer i = 0
+		
+		while (i < 4)
+			if (GetPlayerId(GetOwningPlayer(hero)) < 7)
+				board.getItem(2 + i, 0).setValue(" ")
+			else
+				board.getItem(7 + i, 0).setValue(" ")
+			i++
+			
+		i = getRowForPlayer(GetOwningPlayer(hero))
+		if (i > 1)
+			board.getItem(i, 0).setValue("|cffffcc00>|r")
+	
+	function onLvlUp()
+		integer i
+		unit u = GetLevelingUnit()
+		if (GetPlayerId(GetOwningPlayer(u)) > 1)
+			levels[GetPlayerId(GetOwningPlayer(u))] = GetHeroLevel(u)
+			i = getRowForPlayer(GetOwningPlayer(u))
+			if (i > 1)
+				board.getItem(i, 3).setValue(I2S(levels[GetPlayerId(GetOwningPlayer(u))]))
+	
+	function onKill()
+		integer i
+		integer j
+		real k
+		string color
+		unit killer = GetKillingUnit()
+		unit killed = GetDyingUnit()
+		if (IsUnitType(killed, UNIT_TYPE_HERO))
+			i = GetPlayerId(GetOwningPlayer(killer))
+			j = getRowForPlayerId(i)
+			kills[i] = kills[i] + 1
+			if (j > 1)
+				board.getItem(j, 4).setValue(I2S(kills[i]))
+			
+			i = GetPlayerId(GetOwningPlayer(killed))
+			j = getRowForPlayerId(i)
+			deaths[i] = deaths[i] + 1
+			if (j > 1)
+				board.getItem(j, 5).setValue(I2S(deaths[i]))
+			
+			i = GetPlayerId(GetOwningPlayer(killer))
+			if (series[i] < 0)
+				series[i] = 0
+            
+			series[i] = series[i] + 1
+			if (series[i] > 9)
+				color = "|cff00ff00"
+			else if (series[i] > 6)
+				color = "|cff00ffff"
+			else if (series[i] > 3)
+				color = "|cff0000ff"
+			else
+				color = "|cffbbbbbb"
+
+			j = getRowForPlayerId(i)
+			if (j > 1)
+				board.getItem(j, 6).setValue(color + I2S(series[i]) + "|r")
+            
+			i = GetPlayerId(GetOwningPlayer(killed))
+			if (series[i] > 0)
+				series[i] = 0
+			series[i] = series[i] - 1
+			if (series[i] < -4)
+				color = "|cffff0000"
+			else
+				color = "|cffffff00"
+			j = getRowForPlayerId(i)
+			if (j > 1)
+				board.getItem(j, 6).setValue(color + I2S(series[i]) + "|r")
+            
+			j = GetPlayerId(GetOwningPlayer(killer))
+			if (series[i] >= 0)
+				k = (4 + series[i]) / 5
+			else
+				k = 2 / (1 - series[i])
+			if (kills[i] > 0)
+				k = k * kills[i]
+			if (deaths[i] > 0)
+				k = k / deaths[i]
+			if (levels[j] * 1.5 - levels[i] > 7.5)
+				k = k * 20 * (levels[j] * 1.5 - levels[i])
+			else
+				k = k * 150
+			if (k < 100)
+				k = 100
+			SetPlayerState(Player(j), PLAYER_STATE_RESOURCE_GOLD, GetPlayerState(Player(j), PLAYER_STATE_RESOURCE_GOLD) + R2I(k))
+			i = 2
+			while (i < bj_MAX_PLAYERS)
+				DisplayTimedTextToPlayer(Player(i),0,0,15,GetPlayerName(Player(j)) + " получил за голову " + GetPlayerName(GetOwningPlayer(killed)) + " |cffcccc00" + I2S(R2I(k)) + "|r золота.")
+				i = i + 1
+	
+	function onInitialize()
+		integer i = 0
+        
+		board = CreateMultiboard()
+		board.setColumnCount(7)
+		board.setRowCount(11)
+		board.setTitle("Score")
+		board.setItemsStyle(true, false)
+		board.getItem(0, 0).setWidth(0.01)
+		board.getItem(0, 1).setValue("Nick")
+		board.getItem(0, 1).setWidth(0.07)
+		board.getItem(0, 2).setValue("Hero")
+		board.getItem(0, 2).setWidth(0.10)
+		board.getItem(0, 3).setValue("L")
+		board.getItem(0, 3).setWidth(0.02)
+		board.getItem(0, 4).setValue("K")
+		board.getItem(0, 4).setWidth(0.02)
+		board.getItem(0, 5).setValue("D")
+		board.getItem(0, 5).setWidth(0.02)
+		board.getItem(0, 6).setValue("S")
+		board.getItem(0, 6).setWidth(0.02)
+		board.getItem(1, 0).setValue("|cffff0000Horde|r")
+		board.getItem(6, 0).setValue("|cff0000ffAlliance|r")
+        
+		//3-6 - horde
+		//7-10 - alliance
+		while (i < 4)
+			board.getItem(2 + i, 0).setWidth(0.01)
+			board.getItem(2 + i, 1).setWidth(0.07)
+			board.getItem(2 + i, 2).setWidth(0.10)
+			board.getItem(2 + i, 3).setWidth(0.02)
+			board.getItem(2 + i, 4).setWidth(0.02)
+			board.getItem(2 + i, 5).setWidth(0.02)
+			board.getItem(2 + i, 6).setWidth(0.02)
+			if (GetPlayerController(Player(3 + i)) == MAP_CONTROL_USER and GetPlayerSlotState(Player(3 + i)) == PLAYER_SLOT_STATE_PLAYING)
+				board.getItem(2 + i, 1).setValue("|cffffcc00" + GetPlayerName(Player(3 + i)) + "|r")
+				board.getItem(2 + i, 3).setValue("1")
+				board.getItem(2 + i, 4).setValue("0")
+				board.getItem(2 + i, 5).setValue("0")
+				board.getItem(2 + i, 6).setValue("0")
+				levels[3 + i] = 1
+			else
+				board.getItem(2 + i, 1).setValue("|cffffcc00---|r")
+			TriggerRegisterPlayerUnitEvent(heroLvlUp, Player(3 + i), EVENT_PLAYER_HERO_LEVEL, null)
+			TriggerRegisterPlayerUnitEvent(heroKill, Player(3 + i), EVENT_PLAYER_UNIT_DEATH, null)
+			
+			board.getItem(7 + i, 0).setWidth(0.01)
+			board.getItem(7 + i, 1).setWidth(0.07)
+			board.getItem(7 + i, 2).setWidth(0.10)
+			board.getItem(7 + i, 3).setWidth(0.02)
+			board.getItem(7 + i, 4).setWidth(0.02)
+			board.getItem(7 + i, 5).setWidth(0.02)
+			board.getItem(7 + i, 6).setWidth(0.02)
+			if (GetPlayerController(Player(7 + i)) == MAP_CONTROL_USER and GetPlayerSlotState(Player(7 + i)) == PLAYER_SLOT_STATE_PLAYING)
+				board.getItem(7 + i, 1).setValue("|cffffcc00" + GetPlayerName(Player(3 + i)) + "|r")
+				board.getItem(7 + i, 3).setValue("1")
+				board.getItem(7 + i, 4).setValue("0")
+				board.getItem(7 + i, 5).setValue("0")
+				board.getItem(7 + i, 6).setValue("0")
+				levels[7 + i] = 1
+			else
+				board.getItem(7 + i, 1).setValue("|cffffcc00---|r")
+				MultiboardSetItemValue(MultiboardGetItem(board, 7 + i, 1), "|cffffcc00---|r")
+			TriggerRegisterPlayerUnitEvent(heroLvlUp, Player(7 + i), EVENT_PLAYER_HERO_LEVEL, null)
+			TriggerRegisterPlayerUnitEvent(heroKill, Player(7 + i), EVENT_PLAYER_UNIT_DEATH, null)
+			i = i + 1
+		board.display(true)
+	
+	init
+		debugstream = new DebugStream("SS AoS - main debug")
+		debugstream.writeln("multiboard init")
+		heroLvlUp = CreateTrigger()
+		TriggerAddAction(heroLvlUp, function onLvlUp)
+		heroKill = CreateTrigger()
+		TriggerAddAction(heroKill, function onKill)
+		initializer = CreateTrigger()
+		TriggerAddAction(initializer, function onInitialize)
+		TriggerRegisterTimerEvent(initializer, 1, false)
+endpackage

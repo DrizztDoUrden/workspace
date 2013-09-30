@@ -1,0 +1,24 @@
+package Cleaning
+	import SSGlobals
+	import UnitClass
+	import DFDebugger
+	DebugStream debugstream
+	trigger trg_Dead_delete
+	
+	function trig_Dead_delete_Actions()
+		unit u = GetTriggerUnit()
+		if (not (IsUnitType(u, UNIT_TYPE_HERO) or IsUnitType(u, UNIT_TYPE_STRUCTURE)))
+			TriggerSleepAction( 60.00 )
+			if ( GetUnitState( u, UNIT_STATE_LIFE) <= 0 )
+				destroy u.getUserData() castTo Unit
+
+	init
+		debugstream = new DebugStream("SS AoS - main debug")
+		debugstream.writeln("cleaning init")
+		integer i = 0
+		trg_Dead_delete = CreateTrigger(  )
+		while i < 12
+			TriggerRegisterPlayerUnitEvent(trg_Dead_delete, Player(i), EVENT_PLAYER_UNIT_DEATH, null)
+			i++
+		TriggerAddAction( trg_Dead_delete, function trig_Dead_delete_Actions )
+endpackage

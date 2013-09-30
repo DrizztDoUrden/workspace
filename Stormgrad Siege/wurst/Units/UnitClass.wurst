@@ -1,0 +1,25 @@
+package UnitClass
+	public function unit.getId() returns Unit
+		return this.getUserData() castTo Unit
+	
+	public class Unit
+		protected unit thisUnit
+		
+		construct(unit u)
+			thisUnit = u
+			thisUnit.setUserData(this castTo integer)
+		
+		construct(player p, integer id, real x, real y, real face)
+			thisUnit = CreateUnit(p, id, x, y, face)
+			thisUnit.setUserData(this castTo integer)
+		
+		construct(player p, integer id, location l, real face)
+			thisUnit = CreateUnitAtLoc(p, id, l, face)
+			thisUnit.setUserData(this castTo integer)
+		
+		function getUnit() returns unit
+			return thisUnit
+		
+		ondestroy
+			thisUnit.remove()
+endpackage

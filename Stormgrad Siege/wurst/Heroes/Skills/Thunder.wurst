@@ -1,15 +1,18 @@
 package Thunder
 	import SSGlobals
+	import DFDebugger
+	DebugStream debugstream
+	
 	integer thunderIndexer
 	unit thunderUnit
 	trigger gg_trg_Thunder_periodic
 	trigger switcher
 
 	function trig_Thunder_periodic_Conditions() returns boolean
-		return GetUnitState(udg_Thunder_caster, UNIT_STATE_LIFE) >= 0
+		return GetUnitState(thunder_caster, UNIT_STATE_LIFE) >= 0
 	
 	function thunderEnum()
-		if (GetUnitState(GetEnumUnit(), UNIT_STATE_LIFE) >= 0 and IsUnitEnemy(GetEnumUnit(), GetOwningPlayer(udg_Thunder_caster)) and not IsUnitType(GetEnumUnit(), UNIT_TYPE_MAGIC_IMMUNE) and not IsUnitType(GetEnumUnit(), UNIT_TYPE_MECHANICAL) and not IsUnitType(GetEnumUnit(), UNIT_TYPE_STRUCTURE))
+		if (GetUnitState(GetEnumUnit(), UNIT_STATE_LIFE) >= 0 and IsUnitEnemy(GetEnumUnit(), GetOwningPlayer(thunder_caster)) and not IsUnitType(GetEnumUnit(), UNIT_TYPE_MAGIC_IMMUNE) and not IsUnitType(GetEnumUnit(), UNIT_TYPE_MECHANICAL) and not IsUnitType(GetEnumUnit(), UNIT_TYPE_STRUCTURE))
 			thunderIndexer = thunderIndexer + 1
 			if (GetRandomInt(1, thunderIndexer) == 1)
 				thunderUnit = GetEnumUnit()
@@ -21,27 +24,29 @@ package Thunder
 		thunderIndexer = 0 
 		thunderUnit = null
 		
-		GroupEnumUnitsInRangeOfLoc(g, GetUnitLoc(udg_Thunder_caster), 400, null)
+		GroupEnumUnitsInRangeOfLoc(g, GetUnitLoc(thunder_caster), 400, null)
 		ForGroup(g, function thunderEnum)
 		DestroyGroup(g)
 		
 		if (thunderUnit != null)
-			thunder_effect = AddSpecialEffectTarget( "Abilities\\Spells\\Other\\Monsoon\\MonsoonBoltTarget.mdl", udg_Thunder_caster, "origin" )
-			thunder_light = AddLightningEx("FORK", true, GetUnitX(udg_Thunder_caster), GetUnitY(udg_Thunder_caster), GetLocationZ(GetUnitLoc(udg_Thunder_caster)), GetUnitX(thunderUnit), GetUnitY(thunderUnit), GetLocationZ(GetUnitLoc(thunderUnit)))
-			UnitDamageTarget(udg_Thunder_caster, thunderUnit, GetUnitState(udg_Thunder_caster, UNIT_STATE_MAX_MANA) / 4, true, false, ATTACK_TYPE_MAGIC, DAMAGE_TYPE_LIGHTNING, WEAPON_TYPE_WHOKNOWS)
+			thunder_effect = AddSpecialEffectTarget( "Abilities\\Spells\\Other\\Monsoon\\MonsoonBoltTarget.mdl", thunder_caster, "origin" )
+			thunder_light = AddLightningEx("FORK", true, GetUnitX(thunder_caster), GetUnitY(thunder_caster), GetLocationZ(GetUnitLoc(thunder_caster)), GetUnitX(thunderUnit), GetUnitY(thunderUnit), GetLocationZ(GetUnitLoc(thunderUnit)))
+			UnitDamageTarget(thunder_caster, thunderUnit, GetUnitState(thunder_caster, UNIT_STATE_MAX_MANA) / 4, true, false, ATTACK_TYPE_MAGIC, DAMAGE_TYPE_LIGHTNING, WEAPON_TYPE_WHOKNOWS)
 			TriggerSleepAction( 0.95 )
 			DestroyLightning(thunder_light )
 			DestroyEffect(thunder_effect)
 	
 	function switcher_Switch()
 		if (GetSpellAbilityId() == 'A039')
-			udg_Thunder_caster = GetTriggerUnit()
+			thunder_caster = GetTriggerUnit()
 			EnableTrigger( gg_trg_Thunder_periodic )
 			TriggerSleepAction( 10.00 )
 			DisableTrigger( gg_trg_Thunder_periodic )
 	
 	//===========================================================================
 	init
+		debugstream = new DebugStream("SS AoS - main debug")
+		debugstream.writeln("thunder init")
 		switcher = CreateTrigger(  )
 		gg_trg_Thunder_periodic = CreateTrigger(  )
 		TriggerRegisterAnyUnitEventBJ( switcher, EVENT_PLAYER_UNIT_SPELL_CAST )

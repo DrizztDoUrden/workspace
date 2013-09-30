@@ -1,29 +1,34 @@
 package SSGlobals
-	public unit array udg_Curent_Player_Hero
-	public unit array udg_Circles
-	public unit udg_Thunder_caster = null
-	public unit udg_Alliance_Maxlevel = null
-	public unit udg_Horde_Maxlevel = null
-	public unit udg_DK = null
-	public unit udg_Sniper = null
-	public unit udg_Oderg = null
-	public unit udg_Ecsgumation_owner = null
-	public group udg_Skeleton_group = null
-	public boolean array udg_Player_already_has_hero
-	public boolean array udg_Hero_is_dead
-	public boolean udg_DUEL = false
-	public boolean udg_alreadypickedA = false
-	public boolean udg_alreadypickedH = false
-	public boolean udg_QA = false
-	public boolean udg_QH = false
-	public boolean udg_PvP_Test = false
-	public player udg_Host = null
+	public unit array curent_Player_Hero
+	public unit array circles
+	public unit thunder_caster = null
+	public unit alliance_Maxlevel = null
+	public unit horde_Maxlevel = null
+	public unit dk = null
+	public unit sniper = null
+	public unit oderg = null
+	public unit ecsgumation_owner = null
+	public boolean array player_already_has_hero
+	public boolean array hero_is_dead
+	public boolean duel = false
+	public boolean alreadypickedA = false
+	public boolean alreadypickedH = false
+	public boolean questA = false
+	public boolean questH = false
+	public boolean pvp_Test = false
+	public boolean udg_Aliance_is_defeated = false
+	public boolean udg_Horde_is_defeated = false
+	public player host = null
+	public timer array timer_of_resp
+	public timerdialog duel_timer_window
+	public timerdialog array timer_window
 
 	init
-		integer i = -1
-		while (i < 11)
+		integer i = 0
+		while (i < 12)
+			player_already_has_hero[i] = false
+			hero_is_dead[i] = false
+			curent_Player_Hero[i] = null
+			circles[i] = null
 			i++
-			udg_Player_already_has_hero[i] = false
-			udg_Hero_is_dead[i] = false
-			udg_Curent_Player_Hero[i] = null
 endpackage

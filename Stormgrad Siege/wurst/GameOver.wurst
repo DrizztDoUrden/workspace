@@ -1,0 +1,97 @@
+package GameOver
+	import SSGlobals
+	import Duel
+	import DFDebugger
+	DebugStream debugstream
+	trigger trg_Horde_defeat
+	trigger trg_Alliance_defeat
+	
+	function humanDance()
+		unit u = GetEnumUnit()
+		if ( GetPlayerRace(GetOwningPlayer(u)) == RACE_HUMAN )
+			SetUnitAnimation( u, "stand victory" )
+	
+	function hordeDance()
+		unit u = GetEnumUnit()
+		if ( GetPlayerRace(GetOwningPlayer(u)) == RACE_ORC )
+			SetUnitAnimation( u, "stand victory" )
+	
+	function endGameForPlayers()
+		player p = GetEnumPlayer()
+		if ( GetPlayerRace(p) == RACE_HUMAN )
+			if ( udg_Aliance_is_defeated )
+				CustomDefeatBJ( p, "TRIGSTR_2689" )
+			else
+				CustomVictoryBJ( p, true, true )
+		else
+			if ( udg_Horde_is_defeated )
+				CustomDefeatBJ( p, "TRIGSTR_2691" )
+			else
+				CustomVictoryBJ( p, true, true )
+
+	function credits()
+		StartSound( gg_snd_Credits )
+		DisplayTextToPlayer(GetLocalPlayer(), 0, 0, "TRIGSTR_939")
+		TriggerSleepAction( 4.00 )
+		DisplayTextToPlayer(GetLocalPlayer(), 0, 0, "TRIGSTR_937")
+		TriggerSleepAction( 2.00 )
+		DisplayTextToPlayer(GetLocalPlayer(), 0, 0, "TRIGSTR_1070")
+		TriggerSleepAction( 1.00 )
+		DisplayTextToPlayer(GetLocalPlayer(), 0, 0, "Мобов: " + I2S(udg_Total_mob_killed))
+		TriggerSleepAction( 1.00 )
+		DisplayTextToPlayer(GetLocalPlayer(), 0, 0, "Героев: " + I2S(udg_Total_hero_killed))
+		TriggerSleepAction( 75.00 )
+		ForForce( bj_FORCE_ALL_PLAYERS, function endGameForPlayers )
+
+	function trig_Horde_defeat_Actions()
+		unit u
+		location l
+		group g
+		udg_Horde_is_defeated = true
+		PauseAllUnitsBJ( true )
+		l = GetUnitLoc(gg_unit_ndke_0288)
+		u = CreateUnitAtLoc(Player(0), GetUnitTypeId(gg_unit_ndke_0288), l, bj_UNIT_FACING)
+		RemoveLocation(l)
+		SetUnitState(u, UNIT_STATE_LIFE, 0)
+		SetUnitAnimation( gg_unit_ndke_0288, "stand alternate" )
+		SetUnitAnimation( u, "stand alternate" )
+		EndThematicMusic()
+		StopMusic( false )
+		StartSound( gg_snd_DarkVictory )
+		noMoreDuels()
+		DisplayTextToPlayer(GetLocalPlayer(), 0, 0, "TRIGSTR_050")
+		g = CreateGroup()
+		GroupEnumUnitsInRect(g, bj_mapInitialPlayableArea, null)
+		ForGroup(g, function humanDance)
+		TriggerSleepAction( 2.00 )
+		FogEnable( false )
+		TriggerSleepAction( 40.00 )
+		credits()
+
+	function trig_Aliance_defeat_Actions()
+		group g
+		udg_Aliance_is_defeated = true
+		PauseAllUnitsBJ( true )
+		EndThematicMusic(  )
+		StopMusic( false )
+		StartSound( gg_snd_TragicConfrontation )
+		noMoreDuels()
+		DisplayTextToPlayer(GetLocalPlayer(), 0, 0, "TRIGSTR_069")
+		g = CreateGroup()
+		GroupEnumUnitsInRect(g, bj_mapInitialPlayableArea, null)
+		ForGroup(g, function hordeDance)
+		TriggerSleepAction( 2.00 )
+		FogEnable( false )
+		TriggerSleepAction( 45.00 )
+		credits()
+		
+	init
+		debugstream = new DebugStream("SS AoS - main debug")
+		debugstream.writeln("game over init")
+		trg_Horde_defeat = CreateTrigger(  )
+		TriggerRegisterUnitEvent( trg_Horde_defeat, gg_unit_ndke_0288, EVENT_UNIT_DEATH )
+		TriggerAddAction( trg_Horde_defeat, function trig_Horde_defeat_Actions )
+		trg_Alliance_defeat = CreateTrigger(  )
+		TriggerRegisterUnitEvent( trg_Alliance_defeat, gg_unit_hcas_0545, EVENT_UNIT_DEATH )
+		TriggerAddAction( trg_Alliance_defeat, function trig_Aliance_defeat_Actions )
+endpackage

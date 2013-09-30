@@ -1,5 +1,7 @@
 package SnipersTrap
 	import SSGlobals
+	import DFDebugger
+	DebugStream debugstream
 	trigger array traptrigs
 	trigger gg_trg_Sniper_trap
 	triggeraction array triggeracts
@@ -8,12 +10,12 @@ package SnipersTrap
 	unit array udg_Traps
 
 	function trig_sniper_trap_trig_Conditions() returns boolean
-		return IsUnitEnemy(GetEnteringUnit(), GetOwningPlayer(udg_Sniper)) and IsUnitType(GetEnteringUnit(), UNIT_TYPE_HERO)
+		return IsUnitEnemy(GetEnteringUnit(), GetOwningPlayer(sniper)) and IsUnitType(GetEnteringUnit(), UNIT_TYPE_HERO)
 	
 	function trig_sniper_trap1_trig_Actions()
 		unit u = udg_Traps[0]
 		UnitAddAbility( u, 'A041' )
-		SetUnitAbilityLevel( u, 'A041', 1 + GetUnitAbilityLevel(udg_Sniper, 'A040') div 2 )
+		SetUnitAbilityLevel( u, 'A041', 1 + GetUnitAbilityLevel(sniper, 'A040') div 2 )
 		IssueTargetOrder( u, "ensnare", GetEnteringUnit() )
 		udg_Traps[0] = null
 		RemoveRegion(triggerregs[1])
@@ -25,7 +27,7 @@ package SnipersTrap
 	function trig_sniper_trap2_trig_Actions()
 		unit u = udg_Traps[1]
 		UnitAddAbility( u, 'A041' )
-		SetUnitAbilityLevel( u, 'A041', 1 + GetUnitAbilityLevel(udg_Sniper, 'A040') div 2 )
+		SetUnitAbilityLevel( u, 'A041', 1 + GetUnitAbilityLevel(sniper, 'A040') div 2 )
 		IssueTargetOrder( u, "ensnare", GetEnteringUnit() )
 		udg_Traps[1] = null
 		RemoveRegion(triggerregs[1])
@@ -37,7 +39,7 @@ package SnipersTrap
 	function trig_sniper_trap3_trig_Actions()
 		unit u = udg_Traps[2]
 		UnitAddAbility( u, 'A041' )
-		SetUnitAbilityLevel( u, 'A041', 1 + GetUnitAbilityLevel(udg_Sniper, 'A040') div 2 )
+		SetUnitAbilityLevel( u, 'A041', 1 + GetUnitAbilityLevel(sniper, 'A040') div 2 )
 		IssueTargetOrder( u, "ensnare", GetEnteringUnit() )
 		udg_Traps[2] = null
 		RemoveRegion(triggerregs[2])
@@ -56,11 +58,11 @@ package SnipersTrap
 		location l2
 		integer i = 0
 		
-		while (i < GetUnitAbilityLevel(udg_Sniper, 'A040') / 2 and udg_Traps[i] != null)
+		while (i < GetUnitAbilityLevel(sniper, 'A040') / 2 and udg_Traps[i] != null)
 			i = i + 1
 		
-		if (i > GetUnitAbilityLevel(udg_Sniper, 'A040') / 2)
-			i = GetRandomInt(0, GetUnitAbilityLevel(udg_Sniper, 'A040') div 2)
+		if (i > GetUnitAbilityLevel(sniper, 'A040') / 2)
+			i = GetRandomInt(0, GetUnitAbilityLevel(sniper, 'A040') div 2)
 			TriggerRemoveAction(traptrigs[i], triggeracts[i])
 			TriggerRemoveCondition(traptrigs[i], triggerconds[i])
 			DestroyTrigger(traptrigs[i])
@@ -85,10 +87,12 @@ package SnipersTrap
 		RemoveLocation(l2)
 		RemoveLocation(l1)
 		
-		udg_Traps[i] = CreateUnitAtLoc(GetOwningPlayer(udg_Sniper), 'h00N', GetSpellTargetLoc(), bj_UNIT_FACING )
+		udg_Traps[i] = CreateUnitAtLoc(GetOwningPlayer(sniper), 'h00N', GetSpellTargetLoc(), bj_UNIT_FACING )
 	
 	//===========================================================================
 	init
+		debugstream = new DebugStream("SS AoS - main debug")
+		debugstream.writeln("snipers trap init")
 		integer index
 		gg_trg_Sniper_trap = CreateTrigger(  )
 		index = 3

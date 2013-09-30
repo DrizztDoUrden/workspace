@@ -1,0 +1,37 @@
+package DeathKnight
+	import UnitClass
+	import DFDebugger
+	DebugStream debugstream
+	trigger trg_Army_of_the_dead
+	real strRising
+	integer addStrCount
+
+	function trig_Army_of_the_dead_Actions()
+		unit killer = GetKillingUnit()
+		unit killed = GetTriggerUnit()
+		unit ghoul
+		integer aodLevel = GetUnitAbilityLevel(killer, 'A02I')
+		if not (IsUnitType(killed, UNIT_TYPE_STRUCTURE) or IsUnitType(killed, UNIT_TYPE_MECHANICAL))
+			if ( not IsPlayerAlly(GetOwningPlayer(killed), GetOwningPlayer(killer)) and aodLevel > 0)
+				ghoul = (new Unit( GetOwningPlayer(killer), 'u006', GetUnitX(killed), GetUnitY(killed), bj_UNIT_FACING )).getUnit()
+				UnitApplyTimedLife(ghoul, 'BTLF', 20)
+				AddSpecialEffectTarget("Abilities\\Spells\\Undead\\RaiseSkeletonWarrior\\RaiseSkeleton.mdl", ghoul, "origin")
+				if ( IsUnitType(GetTriggerUnit(), UNIT_TYPE_HERO) )
+					strRising = ( strRising + ( aodLevel * 0.30 ) )
+				else
+					addStrCount = ( addStrCount + 1 )
+				if ( addStrCount >= ( 40 - ( aodLevel * 5 ) ) )
+					addStrCount = ( addStrCount - ( 40 - ( aodLevel * 5 ) ) )
+					strRising = ( strRising + 1 )
+				if ( strRising >= 1.00 )
+					SetHeroStr(killer, GetHeroStr(killer, false) + 1, true)
+					AddSpecialEffectTarget("Abilities\\Spells\\Items\\AIsm\\AIsmTarget.mdl", killer, "origin")
+					strRising = ( strRising - 1 )
+
+	init
+		debugstream = new DebugStream("SS AoS - main debug")
+		debugstream.writeln("army of dead init")
+		trg_Army_of_the_dead = CreateTrigger(  )
+		TriggerRegisterAnyUnitEventBJ( trg_Army_of_the_dead, EVENT_PLAYER_UNIT_DEATH )
+		TriggerAddAction( trg_Army_of_the_dead, function trig_Army_of_the_dead_Actions )
+endpackage

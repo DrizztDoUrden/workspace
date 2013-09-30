@@ -1,5 +1,7 @@
 package Respawn
 	import SSGlobals
+	import DFDebugger
+	DebugStream debugstream
 	trigger trg_Hero_respawn
 	
 	function trig_Hero_respawn_Conditions() returns boolean
@@ -18,12 +20,12 @@ package Respawn
 		l = Location(GetRectCenterX(heroresp), GetRectCenterY(heroresp))
 		TimerDialogDisplay( timerwindow, GetLocalPlayer() == GetOwningPlayer(u) )
 		TimerStart( t, I2R(GetHeroLevel(u)), false, null )
-		udg_Hero_is_dead[1 + GetPlayerId(GetOwningPlayer(u))] = true
+		hero_is_dead[1 + GetPlayerId(GetOwningPlayer(u))] = true
 		TriggerSleepAction( I2R(GetHeroLevel(u)) )
 		TimerDialogDisplay( timerwindow, false )
-		udg_Hero_is_dead[1 + GetPlayerId(GetOwningPlayer(u))] = false
+		hero_is_dead[1 + GetPlayerId(GetOwningPlayer(u))] = false
 		ReviveHeroLoc( u, l, true )
-		if (udg_DUEL)
+		if (duel)
 			PauseUnit( u, true )
 		else
 			if (GetLocalPlayer() == GetOwningPlayer(u))
@@ -33,6 +35,8 @@ package Respawn
 	
 	//===========================================================================
 	init
+		debugstream = new DebugStream("SS AoS - main debug")
+		debugstream.writeln("respawn init")
 		trg_Hero_respawn = CreateTrigger(  )
 		TriggerRegisterAnyUnitEventBJ( trg_Hero_respawn, EVENT_PLAYER_UNIT_DEATH )
 		TriggerAddCondition( trg_Hero_respawn, Condition( function trig_Hero_respawn_Conditions ) )

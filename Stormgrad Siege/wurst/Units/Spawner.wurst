@@ -1,0 +1,65 @@
+package Spawner
+	import SSGlobals
+	import UnitClass
+	import DFDebugger
+	DebugStream debugstream
+	trigger trg_creep_spawn
+	
+	function trig_creep_spawn_Actions()
+		location l
+		if not (duel or udg_Horde_is_defeated or udg_Aliance_is_defeated or udg_Movie)
+			if ( GetUnitState(gg_unit_obar_0070, UNIT_STATE_LIFE) > 0 and udg_H_quest_completed >= 1 )
+				new Unit( Player(0), 'ogru', GetRectCenterX(gg_rct_Horde_second_base_spw), GetRectCenterY(gg_rct_Horde_second_base_spw), bj_UNIT_FACING )
+				new Unit( Player(0), 'ogru', GetRectCenterX(gg_rct_Horde_second_base_spw), GetRectCenterY(gg_rct_Horde_second_base_spw), bj_UNIT_FACING )
+				new Unit( Player(0), 'ogru', GetRectCenterX(gg_rct_Horde_second_base_spw), GetRectCenterY(gg_rct_Horde_second_base_spw), bj_UNIT_FACING )
+				new Unit( Player(0), 'orai', GetRectCenterX(gg_rct_Horde_second_base_spw), GetRectCenterY(gg_rct_Horde_second_base_spw), bj_UNIT_FACING )
+				new Unit( Player(0), 'ohun', GetRectCenterX(gg_rct_Horde_second_base_spw), GetRectCenterY(gg_rct_Horde_second_base_spw), bj_UNIT_FACING )
+				new Unit( Player(0), 'ohun', GetRectCenterX(gg_rct_Horde_second_base_spw), GetRectCenterY(gg_rct_Horde_second_base_spw), bj_UNIT_FACING )
+				new Unit( Player(0), 'odoc', GetRectCenterX(gg_rct_Horde_second_base_spw), GetRectCenterY(gg_rct_Horde_second_base_spw), bj_UNIT_FACING )
+				new Unit( Player(0), 'owyv', GetRectCenterX(gg_rct_Horde_second_base_spw), GetRectCenterY(gg_rct_Horde_second_base_spw), bj_UNIT_FACING )
+			if ( GetUnitState(gg_unit_obar_0068, UNIT_STATE_LIFE) > 0 )
+				new Unit( Player(0), 'ogru', GetRectCenterX(gg_rct_Horde_main_creep_spawn), GetRectCenterY(gg_rct_Horde_main_creep_spawn), bj_UNIT_FACING )
+				new Unit( Player(0), 'ogru', GetRectCenterX(gg_rct_Horde_main_creep_spawn), GetRectCenterY(gg_rct_Horde_main_creep_spawn), bj_UNIT_FACING )
+				new Unit( Player(0), 'ogru', GetRectCenterX(gg_rct_Horde_main_creep_spawn), GetRectCenterY(gg_rct_Horde_main_creep_spawn), bj_UNIT_FACING )
+				new Unit( Player(0), 'odoc', GetRectCenterX(gg_rct_Horde_main_creep_spawn), GetRectCenterY(gg_rct_Horde_main_creep_spawn), bj_UNIT_FACING )
+				new Unit( Player(0), 'ohun', GetRectCenterX(gg_rct_Horde_main_creep_spawn), GetRectCenterY(gg_rct_Horde_main_creep_spawn), bj_UNIT_FACING )
+				l = Location(GetRectCenterX(gg_rct_Horde_main_creep_spawn), GetRectCenterY(gg_rct_Horde_main_creep_spawn))
+				AddSpecialEffectLoc( "Abilities\\Spells\\NightElf\\BattleRoar\\RoarCaster.mdl", l )
+				RemoveLocation(l)
+			if ( GetUnitState(gg_unit_osld_0152, UNIT_STATE_LIFE) > 0 )
+				new Unit( Player(0), 'ohun', GetRectCenterX(gg_rct_Horde_left_creep_spw), GetRectCenterY(gg_rct_Horde_left_creep_spw), bj_UNIT_FACING )
+				new Unit( Player(0), 'oshm', GetRectCenterX(gg_rct_Horde_left_creep_spw), GetRectCenterY(gg_rct_Horde_left_creep_spw), bj_UNIT_FACING )
+				new Unit( Player(0), 'odoc', GetRectCenterX(gg_rct_Horde_left_creep_spw), GetRectCenterY(gg_rct_Horde_left_creep_spw), bj_UNIT_FACING )
+				new Unit( Player(0), 'ogru', GetRectCenterX(gg_rct_Horde_left_creep_spw), GetRectCenterY(gg_rct_Horde_left_creep_spw), bj_UNIT_FACING )
+				new Unit( Player(0), 'ogru', GetRectCenterX(gg_rct_Horde_left_creep_spw), GetRectCenterY(gg_rct_Horde_left_creep_spw), bj_UNIT_FACING )
+				l = Location(GetRectCenterX(gg_rct_Horde_left_creep_spw), GetRectCenterY(gg_rct_Horde_left_creep_spw))
+				AddSpecialEffectLoc( "Abilities\\Spells\\NightElf\\BattleRoar\\RoarCaster.mdl", l )
+				RemoveLocation(l)
+			if ( udg_Gate_is_destroyed and GetUnitState(gg_unit_hbar_0067, UNIT_STATE_LIFE) > 0 )
+				new Unit( Player(1), 'hhes', GetRectCenterX(gg_rct_Aliance_main_creep_spawn), GetRectCenterY(gg_rct_Aliance_main_creep_spawn), bj_UNIT_FACING )
+				new Unit( Player(1), 'hhes', GetRectCenterX(gg_rct_Aliance_main_creep_spawn), GetRectCenterY(gg_rct_Aliance_main_creep_spawn), bj_UNIT_FACING )
+				new Unit( Player(1), 'hhes', GetRectCenterX(gg_rct_Aliance_main_creep_spawn), GetRectCenterY(gg_rct_Aliance_main_creep_spawn), bj_UNIT_FACING )
+				new Unit( Player(1), 'hrif', GetRectCenterX(gg_rct_Aliance_main_creep_spawn), GetRectCenterY(gg_rct_Aliance_main_creep_spawn), bj_UNIT_FACING )
+				new Unit( Player(1), 'hmpr', GetRectCenterX(gg_rct_Aliance_main_creep_spawn), GetRectCenterY(gg_rct_Aliance_main_creep_spawn), bj_UNIT_FACING )
+			if ( udg_A_quest_completed >= 1 and GetUnitState(gg_unit_hbar_0144, UNIT_STATE_LIFE) > 0 )
+				new Unit( Player(1), 'hhes', GetRectCenterX(gg_rct_A_right_spw), GetRectCenterY(gg_rct_A_right_spw), bj_UNIT_FACING )
+				new Unit( Player(1), 'hhes', GetRectCenterX(gg_rct_A_right_spw), GetRectCenterY(gg_rct_A_right_spw), bj_UNIT_FACING )
+				new Unit( Player(1), 'hrif', GetRectCenterX(gg_rct_A_right_spw), GetRectCenterY(gg_rct_A_right_spw), bj_UNIT_FACING )
+				new Unit( Player(1), 'hmpr', GetRectCenterX(gg_rct_A_right_spw), GetRectCenterY(gg_rct_A_right_spw), bj_UNIT_FACING )
+				new Unit( Player(1), 'hkni', GetRectCenterX(gg_rct_A_right_spw), GetRectCenterY(gg_rct_A_right_spw), bj_UNIT_FACING )
+				new Unit( Player(1), 'hgry', GetRectCenterX(gg_rct_A_right_spw), GetRectCenterY(gg_rct_A_right_spw), bj_UNIT_FACING )
+			if ( GetUnitState(gg_unit_o006_0069, UNIT_STATE_LIFE) > 0 )
+				new Unit( Player(1), 'hhes', GetRectCenterX(gg_rct_Alliance_left_reserv_spw), GetRectCenterY(gg_rct_Alliance_left_reserv_spw), bj_UNIT_FACING )
+				new Unit( Player(1), 'hhes', GetRectCenterX(gg_rct_Alliance_left_reserv_spw), GetRectCenterY(gg_rct_Alliance_left_reserv_spw), bj_UNIT_FACING )
+				new Unit( Player(1), 'hrif', GetRectCenterX(gg_rct_Alliance_left_reserv_spw), GetRectCenterY(gg_rct_Alliance_left_reserv_spw), bj_UNIT_FACING )
+				new Unit( Player(1), 'hspt', GetRectCenterX(gg_rct_Alliance_left_reserv_spw), GetRectCenterY(gg_rct_Alliance_left_reserv_spw), bj_UNIT_FACING )
+				new Unit( Player(1), 'hmpr', GetRectCenterX(gg_rct_Alliance_left_reserv_spw), GetRectCenterY(gg_rct_Alliance_left_reserv_spw), bj_UNIT_FACING )
+	
+	//===========================================================================
+	init
+		debugstream = new DebugStream("SS AoS - main debug")
+		debugstream.writeln("spawner init")
+		trg_creep_spawn = CreateTrigger(  )
+		TriggerRegisterTimerEvent(trg_creep_spawn, 40, true)
+		TriggerAddAction( trg_creep_spawn, function trig_creep_spawn_Actions )
+endpackage

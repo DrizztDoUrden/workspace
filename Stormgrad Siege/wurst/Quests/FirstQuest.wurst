@@ -1,0 +1,25 @@
+package FirstQuest
+	import SSGlobals
+	import DFDebugger
+	DebugStream debugstream
+	trigger trg_Aquest
+	
+	function trig_Aquest_Actions()
+		force f
+		f = CreateForce()
+		if ( udg_alreadypickedA and udg_A_quest_completed == 0 )
+			if (IsPlayerAlly(GetLocalPlayer(), Player(0)))
+				PingMinimap(GetRectCenterX(gg_rct_peasant_w_4), GetRectCenterY(gg_rct_peasant_w_4), 5)
+		if ( udg_alreadypickedH and udg_H_quest_completed == 0 )
+			if (IsPlayerAlly(GetLocalPlayer(), Player(1)))
+				PingMinimap(GetUnitX(gg_unit_ngol_0241), GetUnitY(gg_unit_ngol_0241), 5)
+		DestroyForce(f)
+	
+	//===========================================================================
+	init
+		debugstream = new DebugStream("SS AoS - main debug")
+		debugstream.writeln("first quest init")
+		trg_Aquest = CreateTrigger(  )
+		TriggerRegisterTimerEventPeriodic( trg_Aquest, 40.00 )
+		TriggerAddAction( trg_Aquest, function trig_Aquest_Actions )
+endpackage

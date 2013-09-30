@@ -1,0 +1,126 @@
+package Initialization
+	import NeutralCreep
+	import UnitIndexing
+	import SSGlobals
+	import HostDetection
+	import DFDebugger
+	DebugStream debugstream
+	trigger trg_Start
+	integer iPlayersA
+	integer iPlayersH
+	
+	function setPlayersVision()
+		player p = GetEnumPlayer()
+		location l
+		if ( GetPlayerController(GetEnumPlayer()) == MAP_CONTROL_USER or GetPlayerSlotState(GetEnumPlayer()) == PLAYER_SLOT_STATE_PLAYING )
+			if ( GetPlayerRace(GetEnumPlayer()) == RACE_HUMAN )
+				l = Location(GetDestructableX(gg_dest_LTe1_0377), GetDestructableY(gg_dest_LTe1_0377))
+				FogModifierStart(CreateFogModifierRadiusLoc(p, FOG_OF_WAR_VISIBLE, l, 512, true, false))
+				RemoveLocation(l)
+				l = GetUnitLoc(gg_unit_nmoo_0543)
+				FogModifierStart(CreateFogModifierRadiusLoc(p, FOG_OF_WAR_VISIBLE, l, 512, true, false))
+				iPlayersA = ( iPlayersA + 1 )
+			else
+				l = Location(GetDestructableX(gg_dest_ATg1_0481), GetDestructableY(gg_dest_ATg1_0481))
+				FogModifierStart(CreateFogModifierRadiusLoc(p, FOG_OF_WAR_VISIBLE, l, 512, true, false))
+				RemoveLocation(l)
+				l = GetUnitLoc(gg_unit_nmoo_0301)
+				FogModifierStart(CreateFogModifierRadiusLoc(p, FOG_OF_WAR_VISIBLE, l, 512, true, false))
+				iPlayersH = ( iPlayersH + 1 )
+			SetPlayerState(p, PLAYER_STATE_RESOURCE_FOOD_CAP, 0)
+			SetPlayerTechMaxAllowed( p, 'R000', 0 )
+			SetPlayerTechMaxAllowed( p, 'R001', 0 )
+			SetPlayerTechMaxAllowed( p, 'R002', 0 )
+			RemoveLocation(l)
+	
+	function giveStartingResourses()
+		player p = GetEnumPlayer()
+		if GetPlayerRace(p) == RACE_HUMAN
+			SetPlayerState(p, PLAYER_STATE_RESOURCE_GOLD, 6000 div iPlayersA)
+			SetPlayerState(p, PLAYER_STATE_RESOURCE_LUMBER, 5 + ( 24 div iPlayersA))
+		else
+			SetPlayerState(p, PLAYER_STATE_RESOURCE_GOLD, 6000 div iPlayersH)
+			SetPlayerState(p, PLAYER_STATE_RESOURCE_LUMBER, 5 + ( 24 div iPlayersH))
+	
+	function hideTimers()
+		integer id = 1 + GetPlayerId(GetEnumPlayer()) 
+		timer_window[id] = CreateTimerDialog(timer_of_resp[id])
+		TimerDialogSetTitle(timer_window[id], "TRIGSTR_4316")
+		TimerDialogDisplay(timer_window[id], false)
+
+	function initializing()
+		DebugStream.stdOutToScreen = true
+		getHost()
+		indexUnits()
+		NeutralCreep.initialize()
+		DisplayTimedTextToPlayer(GetLocalPlayer(), 0, 0, 15, "Хост - " + GetPlayerName(host))
+		SetPlayerAlliance(Player(0), Player(2), ALLIANCE_SHARED_VISION, true)
+		SetPlayerAlliance(Player(0), Player(11), ALLIANCE_SHARED_VISION, true)
+		SetPlayerAlliance(Player(1), Player(2), ALLIANCE_SHARED_VISION, true)
+		SetPlayerAlliance(Player(1), Player(11), ALLIANCE_SHARED_VISION, true)
+		PauseAllUnitsBJ( true )
+		KillDestructable(gg_dest_LTg1_2843)
+		SetDestructableAnimation(gg_dest_LTg1_2843, "death alternate")
+		KillDestructable(gg_dest_LTg1_0986)
+		SetDestructableAnimation(gg_dest_LTg1_0986, "death alternate")
+		AddSpecialEffectLocBJ( GetUnitLoc(gg_unit_ncp3_0062), "Abilities\\Spells\\Undead\\UnholyAura\\UnholyAura.mdl" )
+		AddSpecialEffectLocBJ( GetUnitLoc(gg_unit_ncp3_0018), "Abilities\\Spells\\Undead\\UnholyAura\\UnholyAura.mdl" )
+		//if TriggerEvaluate(gg_trg_Mob_Respawn_Point_Set)
+		//	TriggerExecute(gg_trg_Mob_Respawn_Point_Set)
+		TriggerSleepAction( 3.00 )
+		ForForce( GetPlayersByMapControl(MAP_CONTROL_USER), function hideTimers )
+		//TriggerExecute( gg_trg_Bot )
+		FogEnable(true)
+		udg_Movie = false
+		SetPlayerState(Player(0), PLAYER_STATE_GIVES_BOUNTY, 1)
+		SetPlayerState(Player(1), PLAYER_STATE_GIVES_BOUNTY, 1)
+		SetPlayerOnScoreScreen(Player(0), false)
+		SetPlayerOnScoreScreen(Player(1), false)
+		SetUnitAnimation( gg_unit_ndke_0288, "Stand Work" )
+		SetUnitAnimation( gg_unit_hcas_0545, "Stand Work Upgrade Second" )
+		SetDestructableAnimation(gg_dest_BTrs_3921, "Stand Work")
+		KillDestructable(gg_dest_ATg1_0481)
+		KillDestructable(gg_dest_LTe1_0377)
+		SetDestructableInvulnerable(gg_dest_LTe1_0377, true)
+		SetDestructableInvulnerable(gg_dest_ATg1_0481, true)
+		SetUnitInvulnerable( gg_unit_usap_0837, true )
+		SetUnitInvulnerable( gg_unit_ugrv_0839, true )
+		SetUnitInvulnerable( gg_unit_Ulic_0089, true )
+		SetUnitInvulnerable( gg_unit_hcas_0545, true )
+		SetUnitInvulnerable( gg_unit_ndke_0288, true )
+		SetUnitInvulnerable( gg_unit_n00H_0283, true )
+		SetUnitInvulnerable( gg_unit_n00H_0265, true )
+		SetUnitInvulnerable( gg_unit_n00H_0285, true )
+		SetUnitInvulnerable( gg_unit_n00H_0284, true )
+		SetUnitInvulnerable( gg_unit_uzg1_0568, true )
+		SetUnitInvulnerable( gg_unit_uzg1_0665, true )
+		SetUnitInvulnerable( gg_unit_uzg1_0569, true )
+		SetUnitInvulnerable( gg_unit_uzg1_0664, true )
+		udg_Boss_Guard_1 = gg_unit_nrvd_0297
+		udg_Boss_Guard_2 = gg_unit_nrvd_0296
+		udg_Boss = gg_unit_Ulic_0089
+		udg_Trash[0] = gg_unit_nnwr_0356
+		udg_Trash[1] = gg_unit_nrvd_0807
+		TriggerExecute( gg_trg_Instance_reseting )
+		iPlayersA = 0
+		iPlayersH = 0
+		ForForce( bj_FORCE_ALL_PLAYERS, function setPlayersVision )
+		ForForce( bj_FORCE_ALL_PLAYERS, function giveStartingResourses )
+		PauseAllUnitsBJ( false )
+		EnableTrigger( gg_trg_Gold )
+		TriggerSleepAction( 2 )
+		SetUnitAnimation( gg_unit_hpea_0680, "Stand Work Lumber" )
+		SetUnitAnimation( gg_unit_hpea_0681, "Stand Work Lumber" )
+		SetUnitAnimation( gg_unit_earc_0273, "Attack" )
+		SetUnitAnimation( gg_unit_earc_0687, "Attack" )
+		SetUnitAnimation( gg_unit_earc_0686, "Attack" )
+		TriggerSleepAction( 100.00 )
+		DisplayTextToPlayer(GetLocalPlayer(), 0, 0, "TRIGSTR_215")
+	
+	init
+		debugstream = new DebugStream("SS AoS - main debug")
+		debugstream.writeln("inialization init")
+		trg_Start = CreateTrigger()
+		trg_Start.addAction(function initializing)
+		TriggerRegisterTimerEvent(trg_Start, 0.05, false)
+endpackage

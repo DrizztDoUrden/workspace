@@ -1,0 +1,46 @@
+package NeutralCreep
+	import UnitClass
+	
+	function unit.getTypeId() returns integer
+		return GetUnitTypeId(this)
+	
+	public function isUnitQuested(unit u) returns boolean
+		boolean isQuestMob
+		//Quest 1 and dungeon
+		isQuestMob = 			   u.getTypeId() == 'ngrk' or u.getTypeId() == 'ngst' or u.getTypeId() == 'nskg'
+		isQuestMob = isQuestMob or u.getTypeId() == 'nrvd' or u.getTypeId() == 'nskf' or u.getTypeId() == 'ngh2'
+		isQuestMob = isQuestMob or u.getTypeId() == 'nrvl' or u.getTypeId() == 'nvde' or u.getTypeId() == 'nnwr'
+		isQuestMob = isQuestMob or u.getTypeId() == 'ndmu' or u.getTypeId() == 'efon'
+		return isQuestMob
+	
+	public class NeutralCreep extends Unit
+		private real respX
+		private real respY
+		private boolean isQuested
+		private static trigger respawner
+		
+		private static function respawner_Actions() returns boolean
+			NeutralCreep deadCreep
+			location l
+			if GetTriggerUnit().getUserData() castTo Unit instanceof NeutralCreep
+				deadCreep = GetTriggerUnit().getUserData() castTo NeutralCreep
+				
+				TriggerSleepAction(60)
+				if not deadCreep.isQuested
+					l = Location(deadCreep.respX, deadCreep.respY)
+					new NeutralCreep(CreateUnitAtLoc(Player(PLAYER_NEUTRAL_AGGRESSIVE), deadCreep.thisUnit.getTypeId(), l, bj_UNIT_FACING), deadCreep.respX, deadCreep.respY, false)
+					RemoveLocation(l)
+				destroy deadCreep
+			return true
+		
+		construct(unit u, real x, real y, boolean quested)
+			super(u)
+			respX = x
+			respY = y
+			isQuested = quested
+		
+		static function initialize()
+			respawner = CreateTrigger()
+			TriggerRegisterPlayerUnitEvent(respawner, Player(PLAYER_NEUTRAL_AGGRESSIVE), EVENT_PLAYER_UNIT_DEATH, null)
+			respawner.addCondition(Condition(function respawner_Actions))
+endpackage

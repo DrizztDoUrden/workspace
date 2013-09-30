@@ -1,5 +1,7 @@
 package LeaverDetection
 	import SSGlobals
+	import DFDebugger
+	DebugStream debugstream
 	trigger gg_trg_Leaver2
 	trigger gg_trg_Leaver3
 	trigger gg_trg_Leaver4
@@ -19,8 +21,8 @@ package LeaverDetection
 	
 	function trig_Leaver_Main(integer p)
 		integer i = 0
-		unit u = udg_Curent_Player_Hero[p+1]
-		unit c = udg_Circles[p+1]
+		unit u = curent_Player_Hero[p+1]
+		unit c = circles[p+1]
 		
 		SetUnitPositionLoc( u, GetUnitLoc(c) )
 		while (i < 6)
@@ -67,6 +69,8 @@ package LeaverDetection
 	
 	//===========================================================================
 	init
+		debugstream = new DebugStream("SS AoS - main debug")
+		debugstream.writeln("leaver detection init")
 		gg_trg_Leaver2 = CreateTrigger(  )
 		TriggerRegisterPlayerEvent(gg_trg_Leaver2, Player(2), EVENT_PLAYER_LEAVE)
 		TriggerAddAction( gg_trg_Leaver2, function trig_Leaver2_Actions )

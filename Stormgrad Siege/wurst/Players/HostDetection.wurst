@@ -1,23 +1,13 @@
 package HostDetection
 	import SSGlobals
-	trigger trgInit
 	
-	function getHost()
+	public function getHost()
 		gamecache g = InitGameCache("Map.w3v")
 		StoreInteger ( g, "Map", "Host", GetPlayerId(GetLocalPlayer ()))
 		TriggerSyncStart ()
 		SyncStoredInteger ( g, "Map", "Host" )
 		TriggerSyncReady ()
-		udg_Host = Player( GetStoredInteger ( g, "Map", "Host" ))
+		host = Player( GetStoredInteger ( g, "Map", "Host" ))
 		FlushGameCache( g )
 		g = null
-	
-	function trig_INIT_Actions()
-		getHost()
-	
-	init
-		trgInit = CreateTrigger(  )
-		TriggerRegisterTimerEventSingle( trgInit, 0.01 )
-		TriggerAddAction( trgInit, function trig_INIT_Actions )
-		getHost()
 endpackage
